@@ -80,7 +80,7 @@ while true; do
         exit 1
     fi
 
-    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${INACTIVE_PORT}/readyz" 2>/dev/null)
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${INACTIVE_PORT}/readyz" 2>/dev/null) || true
     HTTP_CODE="${HTTP_CODE:-000}"
     if [ "$HTTP_CODE" = "200" ]; then
         echo "[Phase 4/8] headroom-${INACTIVE_COLOR} is ready (HTTP ${HTTP_CODE}, took ${ELAPSED}s)"
