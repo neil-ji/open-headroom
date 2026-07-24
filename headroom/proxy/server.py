@@ -3134,7 +3134,16 @@ def create_app(config: ProxyConfig | None = None) -> FastAPI:
             path = request.url.path
             client = getattr(request, "client", None)
             client_host = getattr(client, "host", None) if client is not None else None
-            if path not in _AUTH_EXEMPT_PATHS and not is_loopback_host(client_host):
+            # Accept the client as loopback-equivalent when it reaches us
+            # through a trusted gateway (e.g. Caddy in a Docker bridge
+            # network).  Mirrors the gate in loopback_guard.require_loopback.
+            from headroom.proxy.forwarded_headers import load_trusted_gateway_cidrs
+            from headroom.proxy.forwarded_policy import peer_is_trusted_gateway
+
+            peer_is_loopback = is_loopback_host(client_host) or peer_is_trusted_gateway(
+                client_host, load_trusted_gateway_cidrs()
+            )
+            if path not in _AUTH_EXEMPT_PATHS and not peer_is_loopback:
                 provided = _extract_proxy_token(request.headers)
                 if provided is None or not hmac.compare_digest(
                     provided.encode("utf-8", "replace"), _proxy_token_bytes
