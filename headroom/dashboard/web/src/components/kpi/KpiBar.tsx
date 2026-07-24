@@ -1,5 +1,7 @@
 import { CompressionMeter } from "./CompressionMeter";
 import { StatLabel } from "@/components/ui/EmptyState";
+import { useAppContext } from "@/context/AppContext";
+import { t } from "@/i18n/translations";
 import type { StatsResponse } from "@/types/api";
 import { fmtNum } from "@/lib/format";
 
@@ -8,6 +10,8 @@ interface KpiBarProps {
 }
 
 export function KpiBar({ stats }: KpiBarProps) {
+  const { lang } = useAppContext();
+  const _t = (k: string) => t(k, lang);
   const savingsPct = stats.tokens?.savings_percent ?? 0;
   const totalTokens = stats.tokens?.saved ?? 0;
   const totalRequests = stats.requests?.total ?? 0;
@@ -33,7 +37,7 @@ export function KpiBar({ stats }: KpiBarProps) {
       <div className="flex items-center gap-3 col-span-2 md:col-span-1">
         <CompressionMeter percentage={savingsPct} isActive={isActive} />
         <div>
-          <StatLabel>Token Savings</StatLabel>
+          <StatLabel>{_t("Token Savings")}</StatLabel>
           <div
             className="text-xl font-mono"
             style={{ color: "var(--color-text)" }}
@@ -44,7 +48,7 @@ export function KpiBar({ stats }: KpiBarProps) {
       </div>
       {/* Requests */}
       <div className="text-center md:text-left">
-        <StatLabel>Requests</StatLabel>
+        <StatLabel>{_t("Requests")}</StatLabel>
         <div
           className="text-lg font-mono"
           style={{ color: "var(--color-text)" }}
@@ -53,13 +57,13 @@ export function KpiBar({ stats }: KpiBarProps) {
         </div>
         <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>
           <span style={{ color: "var(--color-negative)" }}>
-            {fmtNum(failedRequests)} failed
+            {fmtNum(failedRequests)} {_t("failed")}
           </span>
         </div>
       </div>
       {/* Overhead */}
       <div className="text-center md:text-left">
-        <StatLabel>Overhead</StatLabel>
+        <StatLabel>{_t("Overhead")}</StatLabel>
         <div
           className="text-lg font-mono"
           style={{ color: "var(--color-text)" }}
@@ -72,7 +76,7 @@ export function KpiBar({ stats }: KpiBarProps) {
       </div>
       {/* Output Tokens */}
       <div className="text-center md:text-left">
-        <StatLabel>Output Tokens</StatLabel>
+        <StatLabel>{_t("Output Tokens")}</StatLabel>
         <div
           className="text-lg font-mono"
           style={{ color: "var(--color-text)" }}
@@ -82,25 +86,25 @@ export function KpiBar({ stats }: KpiBarProps) {
         <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>
           {stats.tokens?.output_reduction?.available && (
             <span style={{ color: "var(--color-positive)" }}>
-              {outputPct.toFixed(1)}% saved
+              {outputPct.toFixed(1)}{_t("% saved")}
             </span>
           )}
         </div>
       </div>
       {/* Throughput */}
       <div className="text-center md:text-left hidden lg:block">
-        <StatLabel>Throughput</StatLabel>
+        <StatLabel>{_t("Throughput")}</StatLabel>
         <div
           className="text-lg font-mono"
           style={{ color: "var(--color-text)" }}
         >
           {throughput.toFixed(0)}{" "}
           <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-            tok/s
+            {_t("tok/s")}
           </span>
         </div>
         <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-          {fwdThroughput.toFixed(0)} fwd tok/s
+          {fwdThroughput.toFixed(0)} {_t("fwd tok/s")}
         </div>
       </div>
     </div>

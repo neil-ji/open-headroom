@@ -61,7 +61,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   if (!stats) {
-    return <LoadingBlock message="Loading session stats…" />;
+    return <LoadingBlock message={_t("Loading session stats…")} />;
   }
 
   // Cache active check
@@ -80,7 +80,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
   return (
     <div>
       <p className="mb-5 text-xs" style={{ color: "var(--color-text-muted)" }}>
-        Current proxy process · runtime counters reset on restart
+        {_t("Current proxy process · runtime counters reset on restart")}
       </p>
 
       {/* ── Hero KPI Bar ── */}
@@ -149,7 +149,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
             </span>
           </div>
           <div className="mt-1 text-xs" style={{ color: "var(--color-text-muted)" }}>
-            Proxy {fmtNum(stats.tokens?.proxy_compression_saved || 0)} tokens
+            {_t("Proxy")} {fmtNum(stats.tokens?.proxy_compression_saved || 0)} {_t("tokens")}
             {" · "}
             {_t("Of total wire:")} {(stats.tokens?.savings_percent || 0).toFixed(2)}%
           </div>
@@ -194,13 +194,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
               </div>
             </>
           ) : (
-            <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-              <span className="text-2xl font-light">—</span>
-              <div className="mt-1">
-                Enable the output shaper (HEADROOM_OUTPUT_SHAPER=1) and run{" "}
-                <code>headroom learn --verbosity --apply</code> to start measuring.
-              </div>
-            </div>
+            <EmptyState message={_t("Enable the output shaper (HEADROOM_OUTPUT_SHAPER=1) and run headroom learn --verbosity --apply to start measuring.")} />
           )}
         </Card>
 
@@ -222,7 +216,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
               </span>
             </div>
             <div className="mt-1 text-xs" style={{ color: "var(--color-text-muted)" }}>
-              {fmtNum((stats.savings?.by_layer?.tool_search?.requests as number) || 0)} calls · tool schemas deferred
+              {fmtNum((stats.savings?.by_layer?.tool_search?.requests as number) || 0)} {_t("calls · tool schemas deferred")}
             </div>
           </Card>
         )}
@@ -258,12 +252,12 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
           <div className="flex flex-col gap-1 text-[11px]">
             {[
               [
-                "Input (wall / active p50)",
+                _t("Input (wall / active p50)"),
                 `${(stats.throughput?.rolling?.input_wall_clock || 0).toFixed(1)} / ${(stats.throughput?.rolling?.input_active_p50 || 0).toFixed(1)}`,
                 "var(--color-accent)",
               ],
               [
-                "Forward (p50 / p95)",
+                _t("Forward (p50 / p95)"),
                 `${(stats.throughput?.rolling?.forward_p50 || 0).toFixed(1)} / ${(stats.throughput?.rolling?.forward_p95 || 0).toFixed(1)}`,
                 "var(--color-throughput-forward)",
               ],
@@ -271,7 +265,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
               <div key={label} className="flex justify-between border-b border-[var(--color-border)] pb-0.5">
                 <span style={{ color: "var(--color-text-muted)" }}>{label}</span>
                 <span className="font-mono" style={{ color: color as string }}>
-                  {value} tok/s
+                  {value} {_t("tok/s")}
                 </span>
               </div>
             ))}
@@ -350,7 +344,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
           <div className="space-y-3">
             {[
               [_t("Before Compression"), fmtNum(stats.tokens?.total_before_compression || 0)],
-              ["Proxy Removed", fmtNum(stats.tokens?.proxy_compression_saved || 0)],
+              [_t("Proxy Removed"), fmtNum(stats.tokens?.proxy_compression_saved || 0)],
               [_t("After Compression (sent)"), fmtNum(stats.tokens?.input || 0)],
               [_t("Output Tokens"), fmtNum(stats.tokens?.output || 0)],
             ].map(([label, value], i) => (
@@ -376,7 +370,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
             {_t("What Headroom Removed")}
           </h3>
           {sortedWaste.length === 0 ? (
-            <EmptyState message="No waste signals detected yet. Data appears after requests are processed." />
+            <EmptyState message={_t("No waste signals detected yet. Data appears after requests are processed.")} />
           ) : (
             <div className="space-y-3">
               {sortedWaste.map(([signal, tokens]) => (
@@ -415,7 +409,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
               />
             </div>
           ) : (
-            <EmptyState message="Trend data will appear after multiple requests." />
+            <EmptyState message={_t("Trend data will appear after multiple requests.")} />
           )}
         </Card>
       </div>
@@ -429,7 +423,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
               {_t("Prefix Cache Impact")}
             </span>
             <span className="text-xs font-mono" style={{ color: "var(--color-positive)" }}>
-              Net savings: ${fmtCurrency(stats.prefix_cache?.totals?.net_savings_usd || 0)}
+              {_t("Net savings:")} ${fmtCurrency(stats.prefix_cache?.totals?.net_savings_usd || 0)}
             </span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -438,7 +432,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
                 _t("Cache Writes"),
                 fmtNum(stats.prefix_cache?.totals?.cache_write_tokens || 0),
                 "var(--color-warning)",
-                `$${fmtCurrency(stats.prefix_cache?.totals?.write_premium_usd || 0)} write premium`,
+                `$${fmtCurrency(stats.prefix_cache?.totals?.write_premium_usd || 0)} ${_t("write premium")}`,
               ],
               [
                 _t("Hit Rate"),
@@ -458,13 +452,13 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
                   : (stats.prefix_cache?.totals?.bust_count || 0) > 0
                     ? "var(--color-warning)"
                     : "var(--color-positive)",
-                `${fmtNum(stats.prefix_cache?.totals?.bust_write_tokens || 0)} tokens re-written`,
+                `${fmtNum(stats.prefix_cache?.totals?.bust_write_tokens || 0)} {_t("tokens re-written")}`,
               ],
               [
                 _t("Providers"),
                 String(Object.keys(stats.prefix_cache?.by_provider || {}).length),
                 "var(--color-text)",
-                "with cache data",
+                _t("with cache data"),
               ],
             ].map(([label, value, color, subtitle]) => (
               <div key={label as string}>
@@ -496,7 +490,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
                 {_t("Agent Usage")}
               </h3>
               <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-                Before and after token usage by detected client
+                {_t("Before and after token usage by detected client")}
               </div>
             </div>
             <span className="text-xs font-mono" style={{ color: "var(--color-text-secondary)" }}>
@@ -567,7 +561,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
                           {_t("Token flow")}
                         </span>
                         <span className="font-mono" style={{ color: "var(--color-positive)" }}>
-                          {(agent.savings_percent || 0).toFixed(1)}% saved
+                          {(agent.savings_percent || 0).toFixed(1)}{_t("% saved")}
                         </span>
                       </div>
                       <div className="progress-bar w-full flex" style={{ height: 12 }}>
@@ -622,7 +616,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
             {_t("Recent Requests")}
           </span>
           <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-            last 25 — click row to expand
+            {_t("last 25 — click row to expand")}
           </span>
         </div>
         {/* Scroll wrapper for mobile */}
@@ -634,6 +628,10 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
             gridTemplateColumns: "2rem 12fr 22fr 15fr 12fr 10fr 14fr",
             color: "var(--color-text-muted)",
             borderBottom: "1px solid var(--color-border)",
+            position: "sticky",
+            top: 0,
+            zIndex: 1,
+            background: "var(--color-surface)",
           }}
         >
           <div />
@@ -646,7 +644,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
         </div>
         {(stats.recent_requests || []).length === 0 ? (
           <div className="p-8">
-            <EmptyState message="No requests yet. Start using the proxy to see activity here." />
+            <EmptyState message={_t("No requests yet. Start using the proxy to see activity here.")} />
           </div>
         ) : (
           (stats.recent_requests || []).map((req) => (
@@ -661,7 +659,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
                   }))
                 }
               >
-                <div style={{ color: "var(--color-text-muted)" }} aria-label={expanded[req.request_id] ? "Collapse" : "Expand"}>
+                <div style={{ color: "var(--color-text-muted)" }} aria-label={expanded[req.request_id] ? _t("Collapse") : _t("Expand")}>
                   {expanded[req.request_id] ? "−" : "+"}
                 </div>
                 <div className="font-mono truncate" style={{ color: "var(--color-text-secondary)" }}>
@@ -704,10 +702,10 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
                 >
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
                     {[
-                      ["Original Tokens", fmtNum(req.input_tokens_original)],
-                      ["Compressed Tokens", fmtNum(req.input_tokens_optimized)],
-                      ["Tokens Removed", fmtNum(req.tokens_saved)],
-                      ["Optimization Time", `${(req.optimization_latency_ms || 0).toFixed(0)}ms`],
+                      [_t("Original Tokens"), fmtNum(req.input_tokens_original)],
+                      [_t("Compressed Tokens"), fmtNum(req.input_tokens_optimized)],
+                      [_t("Tokens Removed"), fmtNum(req.tokens_saved)],
+                      [_t("Optimization Time"), `${(req.optimization_latency_ms || 0).toFixed(0)}ms`],
                     ].map(([label, value]) => (
                       <div key={label}>
                         <div

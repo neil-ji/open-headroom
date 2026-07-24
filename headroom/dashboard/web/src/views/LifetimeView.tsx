@@ -13,7 +13,7 @@ export function LifetimeView() {
   const { data: ls } = useLifetimeStats(true);
 
   if (!ls) {
-    return <LoadingBlock message="Loading lifetime data…" />;
+    return <LoadingBlock message={_t("Loading lifetime data…")} />;
   }
 
   const projects = Object.entries(ls.projects || {});
@@ -31,7 +31,7 @@ export function LifetimeView() {
         </div>
         <div className="flex items-center gap-2 text-xs" style={{ color: "var(--color-text-muted)" }}>
           <span style={{ color: ls.persistence?.healthy !== false ? "var(--color-positive)" : "var(--color-warning)" }}>
-            {ls.persistence?.healthy !== false ? "Persistence healthy" : `Persistence degraded: ${ls.persistence?.error || "unknown"}`}
+            {ls.persistence?.healthy !== false ? _t("Persistence healthy") : `${_t("Persistence degraded")}: ${ls.persistence?.error || _t("unknown")}`}
           </span>
         </div>
       </div>
@@ -39,10 +39,10 @@ export function LifetimeView() {
       {/* Summary grid */}
       <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-4">
         {[
-          ["Requests", fmtNum(ls.requests?.total || 0), "var(--color-text)"],
-          ["Failed", fmtNum(ls.requests?.failed || 0), "var(--color-negative)"],
-          ["Rate Limited", fmtNum(ls.requests?.rate_limited || 0), "var(--color-warning)"],
-          ["Cached", fmtNum(ls.requests?.cached || 0), "var(--color-positive)"],
+          [_t("Requests"), fmtNum(ls.requests?.total || 0), "var(--color-text)"],
+          [_t("Failed"), fmtNum(ls.requests?.failed || 0), "var(--color-negative)"],
+          [_t("Rate Limited"), fmtNum(ls.requests?.rate_limited || 0), "var(--color-warning)"],
+          [_t("Cached"), fmtNum(ls.requests?.cached || 0), "var(--color-positive)"],
         ].map(([label, value, color]) => (
           <Card key={label as string}>
             <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>{label}</div>
@@ -51,16 +51,16 @@ export function LifetimeView() {
         ))}
       </div>
 
-      <SectionHeader label="Tokens & Cost" />
+      <SectionHeader label={_t("Tokens & Cost")} />
       <div className="grid grid-cols-1 gap-4 mb-6 lg:grid-cols-3">
         <Card>
           <h3 className="mb-3 text-sm" style={{ color: "var(--color-text)" }}>Tokens</h3>
           {[
-            ["Input", fmtNum(ls.tokens?.input || 0)],
-            ["Output", fmtNum(ls.tokens?.output || 0)],
-            ["Attempted Input", fmtNum(ls.tokens?.attempted_input || 0)],
-            ["Saved", fmtNum(ls.tokens?.saved || 0)],
-            ["Token Savings", ls.tokens?.token_savings_percent != null ? `${ls.tokens.token_savings_percent.toFixed(1)}%` : "—"],
+            [_t("Input"), fmtNum(ls.tokens?.input || 0)],
+            [_t("Output"), fmtNum(ls.tokens?.output || 0)],
+            [_t("Attempted Input"), fmtNum(ls.tokens?.attempted_input || 0)],
+            [_t("Saved"), fmtNum(ls.tokens?.saved || 0)],
+            [_t("Token Savings"), ls.tokens?.token_savings_percent != null ? `${ls.tokens.token_savings_percent.toFixed(1)}%` : "—"],
           ].map(([label, value], i) => (
             <div key={i} className="flex justify-between text-sm mb-1">
               <span style={{ color: "var(--color-text-secondary)" }}>{label}</span>
@@ -71,9 +71,9 @@ export function LifetimeView() {
         <Card>
           <h3 className="mb-3 text-sm" style={{ color: "var(--color-text)" }}>Cost</h3>
           {[
-            ["Input cost", `$${fmtCurrency(ls.cost?.input_usd || 0)}`],
-            ["Compression saved", `$${fmtCurrency(ls.cost?.compression_savings_usd || 0)}`],
-            ["Prefix Cache saved", `$${fmtCurrency(ls.cost?.cache_savings_usd || 0)}`],
+            [_t("Input cost"), `$${fmtCurrency(ls.cost?.input_usd || 0)}`],
+            [_t("Compression saved"), `$${fmtCurrency(ls.cost?.compression_savings_usd || 0)}`],
+            [_t("Prefix Cache saved"), `$${fmtCurrency(ls.cost?.cache_savings_usd || 0)}`],
           ].map(([label, value], i) => (
             <div key={i} className="flex justify-between text-sm mb-1">
               <span style={{ color: "var(--color-text-secondary)" }}>{label}</span>
@@ -84,11 +84,11 @@ export function LifetimeView() {
         <Card>
           <h3 className="mb-3 text-sm" style={{ color: "var(--color-text)" }}>Prefix Cache</h3>
           {[
-            ["Hits / requests", `${fmtNum(ls.prefix_cache?.hit_requests || 0)} / ${fmtNum(ls.prefix_cache?.requests || 0)}`],
-            ["Hit rate", ls.prefix_cache?.cache_hit_rate != null ? `${ls.prefix_cache.cache_hit_rate.toFixed(1)}%` : "—"],
-            ["Read / write", `${fmtNum(ls.prefix_cache?.cache_read_tokens || 0)} / ${fmtNum(ls.prefix_cache?.cache_write_tokens || 0)}`],
-            ["TTL 1h / 5m", `${(ls.prefix_cache?.ttl_1h_percent != null ? ls.prefix_cache.ttl_1h_percent.toFixed(0) : "—")}% / ${(ls.prefix_cache?.ttl_5m_percent != null ? ls.prefix_cache.ttl_5m_percent.toFixed(0) : "—")}%`],
-            ["Cache bust", `${fmtNum(ls.prefix_cache?.bust_count || 0)} / ${fmtNum(ls.prefix_cache?.bust_tokens || 0)}`],
+            [_t("Hits / requests"), `${fmtNum(ls.prefix_cache?.hit_requests || 0)} / ${fmtNum(ls.prefix_cache?.requests || 0)}`],
+            [_t("Hit rate"), ls.prefix_cache?.cache_hit_rate != null ? `${ls.prefix_cache.cache_hit_rate.toFixed(1)}%` : "—"],
+            [_t("Read / write"), `${fmtNum(ls.prefix_cache?.cache_read_tokens || 0)} / ${fmtNum(ls.prefix_cache?.cache_write_tokens || 0)}`],
+            [_t("TTL 1h / 5m"), `${(ls.prefix_cache?.ttl_1h_percent != null ? ls.prefix_cache.ttl_1h_percent.toFixed(0) : "—")}% / ${(ls.prefix_cache?.ttl_5m_percent != null ? ls.prefix_cache.ttl_5m_percent.toFixed(0) : "—")}%`],
+            [_t("Cache bust"), `${fmtNum(ls.prefix_cache?.bust_count || 0)} / ${fmtNum(ls.prefix_cache?.bust_tokens || 0)}`],
           ].map(([label, value]) => (
             <div key={label} className="flex justify-between text-sm mb-1">
               <span style={{ color: "var(--color-text-secondary)" }}>{label}</span>
@@ -108,7 +108,7 @@ export function LifetimeView() {
                 {_t("Per-Project Savings")}
               </span>
               <span className="text-xs font-mono" style={{ color: "var(--color-text-muted)" }}>
-                {projects.length} project(s)
+                {projects.length} {_t("project(s)")}
               </span>
             </div>
             <div className="overflow-x-auto">
@@ -116,9 +116,9 @@ export function LifetimeView() {
                 <thead>
                   <tr className="text-xs" style={{ color: "var(--color-text-muted)" }}>
                     <th className="px-4 py-3 text-left font-medium">{_t("Project")}</th>
-                    <th className="px-4 py-3 text-right font-medium">Requests</th>
-                    <th className="px-4 py-3 text-right font-medium">Tokens Saved</th>
-                    <th className="px-4 py-3 text-right font-medium">Saved $</th>
+                    <th className="px-4 py-3 text-right font-medium">{_t("Requests")}</th>
+                    <th className="px-4 py-3 text-right font-medium">{_t("Tokens Saved")}</th>
+                    <th className="px-4 py-3 text-right font-medium">{_t("Saved $")}</th>
                     <th className="px-4 py-3 text-right font-medium">{_t("Savings")}</th>
                     <th className="px-4 py-3 text-right font-medium">{_t("Last Active")}</th>
                   </tr>
@@ -155,27 +155,27 @@ export function LifetimeView() {
               <span>{fmtNum(count as number)}</span>
             </div>
           ))}
-          {Object.keys(ls.requests?.by_provider || {}).length === 0 && <EmptyState message="No data" />}
+          {Object.keys(ls.requests?.by_provider || {}).length === 0 && <EmptyState message={_t("No data")} />}
         </Card>
         <Card>
-          <h3 className="mb-3 text-sm" style={{ color: "var(--color-text)" }}>Stacks</h3>
+          <h3 className="mb-3 text-sm" style={{ color: "var(--color-text)" }}>{_t("Stacks")}</h3>
           {Object.entries(ls.requests?.by_stack || {}).map(([name, count]) => (
             <div key={name} className="flex justify-between text-sm">
               <span style={{ color: "var(--color-text-secondary)" }}>{name}</span>
               <span>{fmtNum(count as number)}</span>
             </div>
           ))}
-          {Object.keys(ls.requests?.by_stack || {}).length === 0 && <EmptyState message="No data" />}
+          {Object.keys(ls.requests?.by_stack || {}).length === 0 && <EmptyState message={_t("No data")} />}
         </Card>
         <Card>
-          <h3 className="mb-3 text-sm" style={{ color: "var(--color-text)" }}>Top Models</h3>
+          <h3 className="mb-3 text-sm" style={{ color: "var(--color-text)" }}>{_t("Top Models")}</h3>
           {Object.entries(ls.by_model || {}).map(([name, m]) => (
             <div key={name} className="flex justify-between text-sm">
               <span className="truncate pr-3" style={{ color: "var(--color-text-secondary)" }}>{name}</span>
               <span>{fmtNum(m.input_tokens + m.output_tokens)}</span>
             </div>
           ))}
-          {Object.keys(ls.by_model || {}).length === 0 && <EmptyState message="No data" />}
+          {Object.keys(ls.by_model || {}).length === 0 && <EmptyState message={_t("No data")} />}
         </Card>
       </div>
     </div>

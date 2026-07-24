@@ -1,6 +1,10 @@
 import { Spinner } from "./Spinner";
+import { useAppContext } from "@/context/AppContext";
+import { t } from "@/i18n/translations";
 
-export function LoadingBlock({ message = "Loading…" }: { message?: string }) {
+export function LoadingBlock({ message }: { message?: string }) {
+  const { lang } = useAppContext();
+  const _t = (k: string) => t(k, lang);
   return (
     <div
       className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-12"
@@ -10,7 +14,7 @@ export function LoadingBlock({ message = "Loading…" }: { message?: string }) {
       }}
     >
       <Spinner size={28} />
-      <p className="text-sm">{message}</p>
+      <p className="text-sm">{message || _t("loading")}</p>
     </div>
   );
 }
@@ -22,6 +26,8 @@ export function ErrorBlock({
   message: string;
   onRetry?: () => void;
 }) {
+  const { lang } = useAppContext();
+  const _t = (k: string) => t(k, lang);
   return (
     <div
       className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-12"
@@ -43,7 +49,7 @@ export function ErrorBlock({
             border: "1px solid var(--color-border)",
           }}
         >
-          Retry
+          {_t("Retry")}
         </button>
       )}
     </div>

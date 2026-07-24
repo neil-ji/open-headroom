@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { Sun, Moon, MessageSquareText, SettingsIcon } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
@@ -9,12 +9,14 @@ export function Header({
   version,
   logFullMessages,
   feedOpen,
+  lastUpdated,
   onToggleFeed,
   onToggleTheme,
 }: {
   version: string;
   logFullMessages: boolean;
   feedOpen: boolean;
+  lastUpdated?: number;
   onToggleFeed: () => void;
   onToggleTheme: () => void;
 }) {
@@ -23,6 +25,16 @@ export function Header({
   const healthy = health?.status === "healthy";
 
   const _t = (key: string) => t(key, lang);
+
+  // Relative time since last data fetch
+  const [ageSec, setAgeSec] = useState(0);
+  useEffect(() => {
+    if (!lastUpdated) return;
+    const tick = () => setAgeSec(Math.round((Date.now() - lastUpdated) / 1000));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [lastUpdated]);
 
   return (
     <header className="glass-header sticky top-0 z-40 px-5 py-3">
@@ -51,7 +63,7 @@ export function Header({
               background: "var(--color-surface-alt)",
             }}
           >
-            {version ? `v${version}` : "loading"}
+            {version ? `v${version}` : _t("loading")}
           </span>
         </div>
 
@@ -108,6 +120,13 @@ export function Header({
             </span>
           </div>
 
+          {/* Freshness */}
+          {lastUpdated ? (
+            <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+              {_t("Updated")} {ageSec < 60 ? `${ageSec}${_t("s ago")}` : `${Math.floor(ageSec / 60)}${_t("m ago")}`}
+            </span>
+          ) : null}
+
           {/* Lang switcher */}
           <select
             value={lang}
@@ -161,7 +180,7 @@ export function Header({
               }
             >
               <MessageSquareText className="w-4 h-4 inline mr-1.5" />
-              Live Feed
+              {_t("Live Feed")}
             </button>
           )}
         </div>

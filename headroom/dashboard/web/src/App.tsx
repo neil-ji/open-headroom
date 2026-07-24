@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { Routes, Route, useSearchParams, Navigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Header } from "@/components/layout/Header";
 import { Layout } from "@/components/layout/Layout";
 import { LiveFeedDrawer } from "@/components/feed/LiveFeedDrawer";
@@ -8,16 +9,19 @@ import { LifetimeView } from "@/views/LifetimeView";
 import { HistoryView } from "@/views/HistoryView";
 import { SettingsPage } from "@/views/SettingsPage";
 import { useAppContext } from "@/context/AppContext";
+import { t } from "@/i18n/translations";
 import { useStats, useHealth } from "@/hooks/useStats";
 import { useTransformations } from "@/hooks/useTransformations";
 
 export function App() {
-  const { toggleTheme } = useAppContext();
+  const { lang, toggleTheme } = useAppContext();
+  const _t = (k: string) => t(k, lang);
+  const queryClient = useQueryClient();
   const [feedOpen, setFeedOpen] = useState(false);
   const [searchParams] = useSearchParams();
   const viewMode = searchParams.get("view") || "session";
 
-  const { data: stats } = useStats();
+  const { data: stats, dataUpdatedAt: statsUpdatedAt } = useStats();
   const { data: health } = useHealth();
   const { data: feedData } = useTransformations(feedOpen);
 
@@ -31,6 +35,20 @@ export function App() {
       }
     }
   }, [stats?.tokens?.saved]);
+
+  // Keyboard shortcut: R to refresh all data
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "r" || e.key === "R") {
+        const tag = (e.target as HTMLElement)?.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+        e.preventDefault();
+        queryClient.invalidateQueries();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [queryClient]);
 
   const toggleFeed = useCallback(() => setFeedOpen((v) => !v), []);
 
@@ -48,13 +66,14 @@ export function App() {
         className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:rounded-md"
         style={{ background: "var(--color-accent)", color: "#fff" }}
       >
-        Skip to main content
+        {_t("Skip to main content")}
       </a>
 
       <Header
         version={version}
         logFullMessages={stats?.log_full_messages ?? false}
         feedOpen={feedOpen}
+        lastUpdated={statsUpdatedAt}
         onToggleFeed={toggleFeed}
         onToggleTheme={toggleTheme}
       />
@@ -94,7 +113,7 @@ export function App() {
           style={{ color: "var(--color-text-muted)" }}
         >
           <div>
-            Press{" "}
+            {_t("Press")}{" "}
             <kbd
               className="px-1.5 py-0.5 rounded text-xs font-mono"
               style={{
@@ -104,7 +123,7 @@ export function App() {
             >
               R
             </kbd>{" "}
-            to refresh
+            {_t("to refresh")}
           </div>
           <div>
             <a
@@ -113,7 +132,7 @@ export function App() {
               rel="noopener noreferrer"
               style={{ color: "var(--color-text-muted)" }}
             >
-              Documentation
+              {_t("Documentation")}
             </a>
           </div>
         </div>

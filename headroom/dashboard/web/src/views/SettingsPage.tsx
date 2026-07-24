@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Sun, Moon } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";
 import { Card } from "@/components/ui/Card";
@@ -30,7 +31,7 @@ interface SettingsSchema {
 }
 
 export function SettingsPage() {
-  const { lang, setLang } = useAppContext();
+  const { lang, setLang, toggleTheme } = useAppContext();
   const _t = (k: string) => t(k, lang);
 
   const [loaded, setLoaded] = useState(false);
@@ -181,10 +182,10 @@ export function SettingsPage() {
         setStatus(_t("Timed out waiting for the proxy. Check the proxy logs."));
       } else if (data.mode === "docker") {
         setApplyCommand(data.command || "");
-        setBanner("Saved. To apply, run the command on the host:");
+        setBanner(_t("Saved. To apply, run the command on the host:"));
         setStatus("");
       } else {
-        setBanner(data.instruction || "Saved. Restart the proxy to apply.");
+        setBanner(data.instruction || _t("Saved. Restart the proxy to apply."));
         setStatus("");
       }
     } catch (e) {
@@ -225,6 +226,15 @@ export function SettingsPage() {
             <a href="/dashboard" className="text-sm" style={{ color: "var(--color-accent)" }}>
               &larr; {_t("Dashboard")}
             </a>
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 rounded-md transition-colors"
+              style={{ color: "var(--color-text-secondary)" }}
+              aria-label={_t("Toggle light/dark mode")}
+            >
+              <Sun className="w-4 h-4 dark:hidden" />
+              <Moon className="w-4 h-4 hidden dark:block" />
+            </button>
           </div>
         </div>
       </div>
@@ -364,12 +374,12 @@ export function SettingsPage() {
                     </p>
                     {field.manifest_managed && manifestManaged && (
                       <p className="text-xs mt-1" style={{ color: "var(--color-warning)" }}>
-                        Managed by the install manifest — change via <code>headroom install</code>.
+                        {_t("Managed by the install manifest — change via")} <code>headroom install</code>.
                       </p>
                     )}
                     {field.env_override && !(field.manifest_managed && manifestManaged) && (
                       <p className="text-xs mt-1" style={{ color: "var(--color-warning)" }}>
-                        Overridden by environment variable <code>{field.env}</code> — edits here have no effect until it&apos;s unset.
+                        {_t("Overridden by environment variable")} <code>{field.env}</code> — {_t("edits here have no effect until it's unset.")}
                       </p>
                     )}
                     {fieldErrors[field.key] && (
