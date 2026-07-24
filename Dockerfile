@@ -16,7 +16,9 @@ ARG HEADROOM_BUILD_VERSION=""
 # No OpenSSL system deps required: the rustls-everywhere refactor
 # eliminated `openssl-sys` from our build tree by switching fastembed
 # to `hf-hub-rustls-tls` + `ort-download-binaries-rustls-tls`.
-RUN apt-get update && \
+# Use Alibaba Cloud mirrors for faster apt within China.
+RUN sed -i 's|http://deb.debian.org|https://mirrors.aliyun.com|g' /etc/apt/sources.list.d/*.sources 2>/dev/null || true && \
+  apt-get update && \
   apt-get install -y --no-install-recommends \
     build-essential \
     g++ \
@@ -48,6 +50,7 @@ COPY crates/ crates/
 COPY headroom/ headroom/
 
 ARG HEADROOM_EXTRAS=proxy,code
+ENV UV_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/usr/local/cargo/git \
@@ -160,7 +163,8 @@ ARG RUNTIME_USER=nonroot
 ARG RUNTIME_HOME=/home/nonroot
 ARG PYTHON_SITE_PACKAGES
 
-RUN apt-get update && \
+RUN sed -i 's|http://deb.debian.org|https://mirrors.aliyun.com|g' /etc/apt/sources.list.d/*.sources 2>/dev/null || true && \
+    apt-get update && \
     apt-get install -y --no-install-recommends curl && \
     rm -rf /var/lib/apt/lists/*
 
