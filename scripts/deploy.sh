@@ -104,8 +104,7 @@ else
     sed -i "s/headroom-${ACTIVE_COLOR}:8787/headroom-${INACTIVE_COLOR}:8787/" "$CADDYFILE"
 fi
 
-# Copy the updated Caddyfile into the container and reload.
-docker cp "$CADDYFILE" headroom-caddy:/etc/caddy/Caddyfile
+# The Caddyfile is bind-mounted — the sed above is already visible inside the container. No docker cp needed.
 docker exec headroom-caddy caddy reload --config /etc/caddy/Caddyfile --force
 
 echo "[Phase 5/8] Caddy reloaded — traffic now goes to headroom-${INACTIVE_COLOR}."
