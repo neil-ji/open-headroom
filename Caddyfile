@@ -13,16 +13,14 @@
 :8787 {
     reverse_proxy headroom-blue:8787 {
         # Use Headroom's existing /readyz for health monitoring.
-        health_path /readyz
+        health_uri /readyz
         health_interval 10s
         health_timeout 5s
-        health_status 2xx-399
         max_fails 3
 
-        # Graceful shutdown: Caddy waits up to 30 s for in-flight upstream
-        # requests to finish before forcibly closing them during a reload.
-        # This gives SSE streams and WebSocket sessions time to complete.
-        graceful 30s
+        # Note: Caddy's native `caddy reload` already performs a graceful
+        # handover — the old process keeps serving in-flight connections
+        # while the new process accepts fresh requests.
     }
 
     header {
