@@ -1,23 +1,19 @@
 <div align="center"><pre>
-  ██╗  ██╗███████╗ █████╗ ██████╗ ██████╗  ██████╗  ██████╗ ███╗   ███╗
-  ██║  ██║██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔═══██╗██╔═══██╗████╗ ████║
-  ███████║█████╗  ███████║██║  ██║██████╔╝██║   ██║██║   ██║██╔████╔██║
-  ██╔══██║██╔══╝  ██╔══██║██║  ██║██╔══██╗██║   ██║██║   ██║██║╚██╔╝██║
-  ██║  ██║███████╗██║  ██║██████╔╝██║  ██║╚██████╔╝╚██████╔╝██║ ╚═╝ ██║
-  ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝     ╚═╝
-              The context compression layer for AI agents
+  ██████╗ ██████╗ ███████╗███╗   ██╗   ██╗  ██╗███████╗ █████╗ ██████╗ ██████╗  ██████╗  ██████╗ ███╗   ███╗
+  ██╔═══██╗██╔══██╗██╔════╝████╗  ██║   ██║  ██║██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔═══██╗██╔═══██╗████╗ ████║
+  ██║   ██║██████╔╝█████╗  ██╔██╗ ██║   ███████║█████╗  ███████║██║  ██║██████╔╝██║   ██║██║   ██║██╔████╔██║
+  ██║   ██║██╔═══╝ ██╔══╝  ██║╚██╗██║   ██╔══██║██╔══╝  ██╔══██║██║  ██║██╔══██╗██║   ██║██║   ██║██║╚██╔╝██║
+  ╚██████╔╝██║     ███████╗██║ ╚████║   ██║  ██║███████╗██║  ██║██████╔╝██║  ██║╚██████╔╝╚██████╔╝██║ ╚═╝ ██║
+   ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═══╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝     ╚═╝
+                         The context compression layer for AI agents — community-maintained fork
 </pre></div>
 
 <p align="center"><strong>60–95% fewer tokens (for JSON data), 15-20% fewer tokens (for coding agents) · library · proxy · MCP · content-aware compressors · local-first · reversible</strong></p>
 
 <p align="center">
-  <a href="https://github.com/chopratejas/headroom/actions/workflows/ci.yml"><img src="https://github.com/chopratejas/headroom/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://app.codecov.io/gh/chopratejas/headroom"><img src="https://codecov.io/gh/chopratejas/headroom/graph/badge.svg" alt="codecov"></a>
-  <a href="https://pypi.org/project/headroom-ai/"><img src="https://img.shields.io/pypi/v/headroom-ai.svg" alt="PyPI"></a>
-  <a href="https://www.npmjs.com/package/headroom-ai"><img src="https://img.shields.io/npm/v/headroom-ai.svg" alt="npm"></a>
-  <a href="https://huggingface.co/chopratejas/kompress-v2-base"><img src="https://img.shields.io/badge/model-Kompress--v2--base-yellow.svg" alt="Model: Kompress-v2-base"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License: Apache 2.0"></a>
   <a href="https://headroom-docs.vercel.app/docs"><img src="https://img.shields.io/badge/docs-online-blue.svg" alt="Docs"></a>
+  <a href="https://huggingface.co/chopratejas/kompress-v2-base"><img src="https://img.shields.io/badge/model-Kompress--v2--base-yellow.svg" alt="Model: Kompress-v2-base"></a>
 </p>
 
 <!-- mcp-name: io.github.headroomlabs-ai/headroom -->
@@ -25,20 +21,28 @@
 <p align="center">
   <a href="https://headroom-docs.vercel.app/docs">Docs</a> ·
   <a href="#get-started-60-seconds">Install</a> ·
-  <a href="#proof">Proof</a> ·
-  <a href="#agent-compatibility-matrix">Agents</a> ·
-  <a href="https://discord.gg/yRmaUNpsPJ">Discord</a> ·
-  <a href="llms.txt">llms.txt</a>
+  <a href="#relationship-with-upstream">Upstream</a> ·
+  <a href="#improvements-in-open-headroom">Improvements</a>
 </p>
 
-<p align="center"><sub>
-  <b>AI agents / LLMs:</b> read <a href="llms.txt"><code>/llms.txt</code></a> here, or fetch <a href="https://headroom-docs.vercel.app/llms.txt">the live index</a> / <a href="https://headroom-docs.vercel.app/llms-full.txt">full docs blob</a>.
-</sub></p>
-
 ---
-<p align="center"><a href="https://trendshift.io/repositories/20881" target="_blank"><img src="https://trendshift.io/api/badge/repositories/20881" alt="chopratejas%2Fheadroom | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
 
-Headroom compresses everything your AI agent reads — tool outputs, logs, RAG chunks, files, and conversation history — before it reaches the LLM. Same answers, fraction of the tokens.
+## Relationship with Upstream
+
+**Open Headroom** is a community-maintained fork of [Headroom](https://github.com/chopratejas/headroom) by [Tejas Chopra](https://github.com/chopratejas), licensed under Apache 2.0. We are grateful for the original project and its foundation.
+
+This fork exists to ship improvements at a faster cadence and to maintain patches we rely on in daily use. We welcome contributions from anyone who wants a well-maintained, batteries-included Headroom deployment.
+
+## Improvements in Open Headroom
+
+Compared to the upstream `headroom` source, this fork includes:
+
+| Area | What we changed |
+|---|---|
+| **Docker deployment** | Default build includes `ml` extra (PyTorch + Kompress-v2-base). Upstream omits this, requiring manual rebuild to enable ML compression. |
+| **DeepSeek compatibility** | `ENABLE_TOOL_SEARCH=true` by default — prevents 140 KB of Anthropic-specific tool schemas from being sent to DeepSeek-compatible backends. |
+| **Dashboard i18n** | Chinese language support with a language switcher (EN / 中文). ~220 UI labels, headers, and messages translated. |
+| **Blue-green parity** | Both blue and green instances share identical `ANTHROPIC_TARGET_API_URL` and `ENABLE_TOOL_SEARCH` settings — no drift after deployment swaps. |
 
 <p align="center">
   <img src="HeadroomDemo-Fast.gif" alt="Headroom in action" width="820">
