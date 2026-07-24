@@ -143,6 +143,18 @@ ci-precheck-commitlint:
 install-git-hooks:
 	@scripts/install-git-hooks.sh
 
+# ─── Blue-green deployment ──────────────────────────────────────────────────
+
+.PHONY: deploy deploy-status
+
+deploy:
+	@bash scripts/deploy.sh
+
+deploy-status:
+	@echo "Active color: $${ACTIVE_COLOR:-blue}"
+	@echo ""
+	@docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null | grep -E "headroom|caddy" || echo "(no headroom containers running)"
+
 # ─── E2e Docker targets ────────────────────────────────────────────────────
 #
 # The wrap-e2e Dockerfile uses manylinux_2_28_x86_64 as its builder stage,
