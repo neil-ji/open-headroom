@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Headroom Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&family=JetBrains+Mono:ital,wght@0,400;0,500&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
     <script>
@@ -16,16 +19,127 @@
                 document.documentElement.classList.add('dark');
             }
         })();
-        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { accent: '#22d3ee' } } } };
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"DM Sans"', 'system-ui', 'sans-serif'],
+                        body: ['"DM Sans"', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+                    },
+                    colors: {
+                        surface: 'var(--color-surface)',
+                        border: 'var(--color-border)',
+                        accent: 'var(--color-accent)',
+                    }
+                }
+            }
+        };
     </script>
     <style>
-        :root { --bg: #f9fafb; --surface: #ffffff; --border: #e5e7eb; --muted: #6b7280; }
-        .dark { --bg: #0b0f14; --surface: #111827; --border: #1f2937; --muted: #9ca3af; }
-        body { background: var(--bg); }
-        .card { background: var(--surface); border: 1px solid var(--border); }
-        .field-help { color: var(--muted); }
-        input, select { background: var(--surface); border: 1px solid var(--border); }
+        /* ── Design Tokens ── */
+        :root {
+            --color-bg: #F5F3EF;
+            --color-surface: #FFFFFF;
+            --color-surface-alt: #FAF9F6;
+            --color-border: #E8E4DC;
+            --color-text: #1E1B18;
+            --color-text-secondary: #78746D;
+            --color-text-muted: #9D9890;
+            --color-accent: #C86E2C;
+            --color-accent-soft: rgba(200, 110, 44, 0.08);
+            --color-positive: #3D8B7E;
+            --color-negative: #C44E4E;
+            --color-warning: #C88A2C;
+            --color-warning-soft: rgba(200, 138, 44, 0.10);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --shadow-card: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04);
+        }
+        html.dark {
+            --color-bg: #141310;
+            --color-surface: #1C1A16;
+            --color-surface-alt: #22201B;
+            --color-border: #2D2A24;
+            --color-text: #EBE7DE;
+            --color-text-secondary: #8B877B;
+            --color-text-muted: #6B675E;
+            --color-accent: #E8A048;
+            --color-accent-soft: rgba(232, 160, 72, 0.10);
+            --color-positive: #5BAF9D;
+            --color-negative: #D4695A;
+            --color-warning: #E0A840;
+            --color-warning-soft: rgba(224, 168, 64, 0.10);
+            --shadow-card: 0 1px 3px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.15);
+        }
+
+        body {
+            background: var(--color-bg);
+            color: var(--color-text);
+            font-family: 'DM Sans', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+        }
+
+        .glass-header {
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        html.dark .glass-header {
+            background: rgba(28,26,22,0.78);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .field-help { color: var(--color-text-secondary); }
+
+        input, select, textarea {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            font-family: inherit;
+        }
         input:disabled, select:disabled { opacity: .55; cursor: not-allowed; }
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 1px;
+            border-color: var(--color-accent);
+        }
+
+        .tab-btn {
+            padding: 0.375rem 0.875rem;
+            font-size: 0.8125rem;
+            border-radius: var(--radius-sm);
+            transition: all 0.15s ease;
+            font-weight: 500;
+        }
+        .tab-btn.active {
+            background: var(--color-accent);
+            color: #fff;
+        }
+        .tab-btn:not(.active) {
+            color: var(--color-text-secondary);
+        }
+        .tab-btn:not(.active):hover {
+            color: var(--color-text);
+            background: var(--color-surface-alt);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; }
+        }
     </style>
 <script>
 // --- I18N (shared subset for settings page) ---
@@ -64,67 +178,85 @@ function t(key) {
 }
 </script>
 </head>
-<body class="text-gray-800 dark:text-gray-100 min-h-screen" x-data="settingsPage()" x-init="init()">
-    <div class="max-w-3xl mx-auto px-4 py-8">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h1 class="text-2xl font-semibold" x-text="t('Settings')">Settings</h1>
-                <p class="text-sm field-help" x-text="t('Configure Headroom runtime knobs. Changes need a restart to apply.')">Configure Headroom runtime knobs. Changes need a restart to apply.</p>
+<body class="min-h-screen" x-data="settingsPage()" x-init="init()">
+    <!-- Header -->
+    <header class="glass-header sticky top-0 z-40 px-5 py-3">
+        <div class="max-w-3xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" style="color: var(--color-accent);">
+                    <rect x="3" y="4" width="4" height="16" rx="1.5" fill="currentColor" opacity="0.9"/>
+                    <rect x="9" y="7" width="4" height="10" rx="1.5" fill="currentColor" opacity="0.65"/>
+                    <rect x="15" y="2" width="4" height="20" rx="1.5" fill="currentColor" opacity="0.40"/>
+                </svg>
+                <h1 class="text-lg font-bold tracking-tight">HEADROOM</h1>
+                <span class="text-xs font-mono px-2 py-0.5 rounded-full" style="color: var(--color-text-muted); background: var(--color-surface-alt);" x-text="t('Settings')">Settings</span>
             </div>
             <div class="flex items-center gap-3">
                 <select @change="setLang($event.target.value)" x-model="lang"
-                        class="text-xs rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 px-2 py-1.5 focus:outline-none">
+                        class="text-xs rounded-md px-2 py-1.5 focus:outline-none"
+                        style="color: var(--color-text-secondary); background: var(--color-surface); border: 1px solid var(--color-border);">
                     <option value="en">EN</option>
                     <option value="zh">中文</option>
                 </select>
-                <a href="/dashboard" class="text-sm text-accent hover:underline">&larr; <span x-text="t('Dashboard')">Dashboard</span></a>
+                <a href="/dashboard" class="text-sm transition-colors" style="color: var(--color-accent);">
+                    &larr; <span x-text="t('Dashboard')">Dashboard</span>
+                </a>
             </div>
+        </div>
+    </header>
+
+    <div class="max-w-3xl mx-auto px-4 py-8">
+        <div class="mb-6">
+            <h2 class="text-xl font-bold mb-1" x-text="t('Settings')">Settings</h2>
+            <p class="text-sm field-help" x-text="t('Configure Headroom runtime knobs. Changes need a restart to apply.')">Configure Headroom runtime knobs. Changes need a restart to apply.</p>
         </div>
 
         <!-- Status / error surface -->
         <template x-if="loadError">
-            <div class="card rounded-lg p-4 mb-4 border-red-500/50">
-                <p class="text-red-500 text-sm" x-text="loadError"></p>
+            <div class="card rounded-lg p-4 mb-4" style="border-color: var(--color-negative);">
+                <p class="text-sm" style="color: var(--color-negative);" x-text="loadError"></p>
             </div>
         </template>
 
         <!-- Restart-required banner -->
         <template x-if="banner">
-            <div class="card rounded-lg p-4 mb-4 border-amber-500/50" x-cloak>
-                <p class="text-amber-500 text-sm font-medium" x-text="banner"></p>
+            <div class="card rounded-lg p-4 mb-4" style="border-color: var(--color-warning);" x-cloak>
+                <p class="text-sm font-medium" style="color: var(--color-warning);" x-text="banner"></p>
                 <template x-if="applyMode === 'docker' && applyCommand">
                     <div class="mt-2">
                         <p class="text-xs field-help mb-1" x-text="t('Run this on the host to apply:')">Run this on the host to apply:</p>
-                        <code class="block text-xs bg-black/40 rounded px-3 py-2 select-all" x-text="applyCommand"></code>
+                        <code class="block text-xs rounded px-3 py-2 select-all font-mono" style="background: var(--color-surface-alt);" x-text="applyCommand"></code>
                     </div>
                 </template>
             </div>
         </template>
 
         <!-- Tier tabs -->
-        <div class="flex items-center gap-2 mb-6" role="tablist">
+        <div class="flex items-center gap-1 mb-6 p-1 rounded-lg" role="tablist" style="background: var(--color-surface-alt); border: 1px solid var(--color-border);">
             <button type="button" role="tab" @click="activeTab = 'basic'"
                     :aria-selected="activeTab === 'basic'"
-                    :class="activeTab === 'basic' ? 'bg-accent text-black' : 'card field-help'"
-                    class="px-3 py-1.5 rounded text-sm font-medium" x-text="t('Settings')">Settings</button>
+                    :class="activeTab === 'basic' ? 'active' : ''"
+                    class="tab-btn" x-text="t('Settings')">Settings</button>
             <button type="button" role="tab" @click="activeTab = 'advanced'"
                     :aria-selected="activeTab === 'advanced'"
-                    :class="activeTab === 'advanced' ? 'bg-accent text-black' : 'card field-help'"
-                    class="px-3 py-1.5 rounded text-sm font-medium" x-text="t('Advanced')">Advanced</button>
+                    :class="activeTab === 'advanced' ? 'active' : ''"
+                    class="tab-btn" x-text="t('Advanced')">Advanced</button>
         </div>
+
         <!-- Grouped fields -->
         <template x-if="loaded">
             <form @submit.prevent>
                 <template x-for="group in groups.filter(g => fieldsIn(g).length > 0)" :key="group">
                     <div class="card rounded-lg p-5 mb-4">
-                        <h2 class="text-sm font-semibold uppercase tracking-wide field-help mb-4" x-text="group"></h2>
+                        <h2 class="text-xs font-semibold uppercase tracking-widest mb-4 field-help" x-text="group"></h2>
                         <template x-for="field in fieldsIn(group)" :key="field.key">
                             <div class="mb-4 last:mb-0">
                                 <label class="flex items-center justify-between gap-4">
                                     <span class="text-sm font-medium" x-text="field.label"></span>
                                     <!-- bool -->
                                     <template x-if="field.type === 'bool'">
-                                        <input type="checkbox" class="h-5 w-5 accent-cyan-400"
+                                        <input type="checkbox" class="h-5 w-5"
+                                               style="accent-color: var(--color-accent);"
                                                :disabled="isLocked(field)"
                                                x-model="values[field.key]">
                                     </template>
@@ -157,23 +289,23 @@ function t(key) {
                                 </label>
                                 <template x-if="field.secret && !isLocked(field)">
                                     <button type="button" @click="values[field.key] = ''; clearedKeys[field.key] = true"
-                                            class="text-xs text-red-500/80 hover:underline mt-1" x-text="t('Clear stored value')">
+                                            class="text-xs hover:underline mt-1" style="color: var(--color-negative);" x-text="t('Clear stored value')">
                                         Clear stored value
                                     </button>
                                 </template>
                                 <p class="text-xs field-help mt-1" x-text="field.help"></p>
                                 <template x-if="field.manifest_managed && manifestManaged">
-                                    <p class="text-xs text-amber-500/80 mt-1">
+                                    <p class="text-xs mt-1" style="color: var(--color-warning);">
                                         Managed by the install manifest — change via <code>headroom install</code>.
                                     </p>
                                 </template>
                                 <template x-if="field.env_override && !(field.manifest_managed && manifestManaged)">
-                                    <p class="text-xs text-amber-500/80 mt-1">
+                                    <p class="text-xs mt-1" style="color: var(--color-warning);">
                                         Overridden by environment variable <code x-text="field.env"></code> -- edits here have no effect until it's unset.
                                     </p>
                                 </template>
                                 <template x-if="fieldErrors[field.key]">
-                                    <p class="text-xs text-red-500 mt-1" x-text="fieldErrors[field.key]"></p>
+                                    <p class="text-xs mt-1" style="color: var(--color-negative);" x-text="fieldErrors[field.key]"></p>
                                 </template>
                             </div>
                         </template>
@@ -183,12 +315,16 @@ function t(key) {
                 <div class="flex items-center gap-3 mt-6">
                     <button type="button" @click="save()"
                             :disabled="busy"
-                            class="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm disabled:opacity-50" x-text="t('Save')">
+                            class="px-4 py-2 rounded text-sm font-medium disabled:opacity-50 transition-colors"
+                            style="background: var(--color-surface-alt); color: var(--color-text); border: 1px solid var(--color-border);"
+                            x-text="t('Save')">
                         Save
                     </button>
                     <button type="button" @click="applyAndRestart()"
                             :disabled="busy"
-                            class="px-4 py-2 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-medium text-sm disabled:opacity-50" x-text="t('Apply & Restart')">
+                            class="px-4 py-2 rounded text-sm font-medium disabled:opacity-50 transition-colors"
+                            style="background: var(--color-accent); color: #fff;"
+                            x-text="t('Apply & Restart')">
                         Apply &amp; Restart
                     </button>
                     <span class="text-sm field-help" x-text="status"></span>
@@ -248,10 +384,6 @@ function t(key) {
                 },
 
                 editableValues() {
-                    // Send only changed, non-locked values. The server merges partial
-                    // updates; posting every effective default would freeze those
-                    // defaults into settings.json and change future upgrade behavior.
-                    // Explicit `null` clears a previously stored value.
                     const out = {};
                     for (const f of this.fields) {
                         if (this.isLocked(f)) continue;
