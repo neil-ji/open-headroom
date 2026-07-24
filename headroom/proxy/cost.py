@@ -67,6 +67,11 @@ _CACHE_ECONOMICS = {
         "write_multiplier": 1.25,
         "label": "Same as Anthropic (Bedrock)",
     },
+    "deepseek": {
+        "read_multiplier": 0.01,
+        "write_multiplier": 1.0,
+        "label": "Automatic disk cache, configurable TTL",
+    },
 }
 
 
@@ -158,6 +163,7 @@ def build_prefix_cache_stats(
                     or (provider == "openai" and any(p in model_name for p in _openai_prefixes))
                     or (provider == "gemini" and "gemini" in model_name)
                     or (provider == "bedrock" and "claude" in model_name)
+                    or (provider == "deepseek" and "deepseek" in model_name)
                 )
                 if is_match and tokens_sent > best_tokens:
                     price_per_1m = cost_tracker._get_list_price(model_name)

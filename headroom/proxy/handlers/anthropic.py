@@ -31,7 +31,7 @@ from headroom.proxy.auth_mode import classify_auth_mode, classify_client
 from headroom.proxy.compression_decision import CompressionDecision
 from headroom.proxy.forwarded_headers import resolve_client_ip
 from headroom.proxy.handlers._debug_dump import _debug_dump_mode, _redact_debug_value
-from headroom.proxy.helpers import extract_tags
+from headroom.proxy.helpers import classify_provider, extract_tags
 from headroom.proxy.image_isolation import run_image_compression_isolated
 from headroom.proxy.memory_decision import MemoryDecision
 from headroom.proxy.memory_query import MemoryQuery
@@ -714,7 +714,9 @@ class AnthropicHandlerMixin:
             # original, forwarded, and the recorded/replayed prefix are all identical)
             # keeps it cache-safe: overlay_cached_prefix replays the same stripped bytes.
             _strip_streaming_only_content_fields(messages)
-            pipeline_provider = provider_name
+            pipeline_provider = provider_name or classify_provider(
+                upstream_base_url or self.ANTHROPIC_API_URL
+            ) or "anthropic"
             pipeline_path = request.url.path if upstream_base_url else "/v1/messages"
             pipeline_stream = bool(body.get("stream", False) or force_stream)
             with stage_timer.measure("deep_copy"):

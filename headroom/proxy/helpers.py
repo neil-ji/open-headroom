@@ -555,10 +555,32 @@ def get_sse_event_max_bytes() -> int:
     )
 
 
-# Well-known OpenAI-compatible upstreams, matched by host against the
-# configured ``--openai-api-url``. Used only to label the dashboard/stats
-# display provider — the internal provider key stays ``openai`` so pricing
-# and request formatting are unaffected (issue #1533).
+# Well-known upstream hosts → canonical provider key. The key flows through
+# the entire request pipeline (pricing, cache economics, persistence, metrics)
+# and MUST be a stable lowercase identifier. Display labels are derived
+# separately via :func:`resolve_display_provider`.
+_PROVIDER_HOSTS: tuple[tuple[str, str], ...] = (
+    # Anthropic-side
+    ("api.anthropic.com", "anthropic"),
+    ("bedrock-runtime", "bedrock"),
+    ("aiplatform.googleapis.com", "vertex"),
+    # OpenAI-compatible
+    ("api.openai.com", "openai"),
+    ("api.deepseek.com", "deepseek"),
+    ("openrouter.ai", "openrouter"),
+    ("api.groq.com", "groq"),
+    ("api.together.xyz", "togetherai"),
+    ("api.fireworks.ai", "fireworks"),
+    ("api.mistral.ai", "mistral"),
+    ("api.perplexity.ai", "perplexity"),
+    ("openai.azure.com", "azure"),
+    # Gemini
+    ("generativelanguage.googleapis.com", "gemini"),
+)
+
+# Display-name mapping used by :func:`resolve_display_provider` for the
+# dashboard /stats endpoint. Only applies to requests whose internal provider
+# is ``openai``; all other providers keep their canonical label.
 _OPENAI_COMPATIBLE_HOSTS: tuple[tuple[str, str], ...] = (
     ("openrouter.ai", "OpenRouter"),
     ("api.groq.com", "Groq"),
@@ -570,6 +592,29 @@ _OPENAI_COMPATIBLE_HOSTS: tuple[tuple[str, str], ...] = (
     ("openai.azure.com", "Azure OpenAI"),
     ("api.openai.com", "OpenAI"),
 )
+
+
+def classify_provider(url: str | None) -> str | None:
+    """Derive a canonical provider key from an upstream base URL hostname.
+
+    Returns ``None`` when the URL is unset or the host is unrecognized.
+    Callers should provide a sensible fallback (e.g. ``"openai"``,
+    ``"anthropic"``).
+    """
+    if not url:
+        return None
+    from urllib.parse import urlparse
+
+    try:
+        host = (urlparse(url).hostname or "").lower()
+    except (ValueError, TypeError):
+        return None
+    if not host:
+        return None
+    for needle, key in _PROVIDER_HOSTS:
+        if needle in host:
+            return key
+    return None
 
 
 def classify_openai_upstream(url: str | None) -> str | None:
@@ -591,7 +636,7 @@ def classify_openai_upstream(url: str | None) -> str | None:
     if not host:
         return None
     for needle, name in _OPENAI_COMPATIBLE_HOSTS:
-        if host == needle or host.endswith("." + needle):
+        if needle in host:
             return name
     return None
 

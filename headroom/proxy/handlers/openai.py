@@ -25,6 +25,7 @@ from urllib.parse import quote, unquote, urlparse
 from headroom.proxy.helpers import (
     COMPRESSION_TIMEOUT_SECONDS,
     _headroom_bypass_enabled,
+    classify_provider,
     extract_tags,
     jitter_delay_ms,
 )
@@ -2770,7 +2771,8 @@ class OpenAIHandlerMixin:
             handler_path,
             upstream_base_url or "",
         )
-        openai_chat_outcome_provider = custom_chat_provider or "openai"
+        url_provider = classify_provider(upstream_base_url or "")
+        openai_chat_outcome_provider = custom_chat_provider or url_provider or "openai"
 
         # Memory: Get user ID when memory is enabled. Reads `request.headers`
         # directly because `headers` was stripped of `x-headroom-*` for the
