@@ -103,6 +103,266 @@
         .bg-card-alt { background: var(--card-alt-bg); }
         .hover-bg-surface:hover { background: var(--color-surface); }
     </style>
+
+<script>
+// --- I18N: language strings for Headroom Dashboard ---
+const I18N = {
+    en: {},
+    zh: {
+        // Header & nav
+        "Session": "会话",
+        "Lifetime": "累计",
+        "Historical": "历史",
+        "Anon Telemetry": "匿名遥测",
+        "Status": "状态",
+        "Healthy": "健康",
+        "Error": "异常",
+        "Updated": "更新于",
+        "Settings": "设置",
+        "Live Feed": "实时流",
+        "Toggle light/dark mode": "切换明暗主题",
+        "Anonymous aggregate telemetry is enabled. Disable with HEADROOM_TELEMETRY=off or --no-telemetry.": "匿名聚合遥测已启用。使用 HEADROOM_TELEMETRY=off 或 --no-telemetry 禁用。",
+
+        // Session view
+        "Current proxy process · runtime counters reset on restart": "当前代理进程 · 运行时计数器重启后归零",
+        "Request Health": "请求健康",
+        "Completed": "已完成",
+        "Failed": "失败",
+        "Rate Limited": "被限流",
+        "Cached": "已缓存",
+        "Live Activity": "实时活动",
+        "Active Requests": "活跃请求",
+        "Active WebSockets": "活跃 WebSocket",
+        "Relay Tasks": "中继任务",
+        "Compression Queued": "排队压缩",
+        "Token Savings": "Token 节省",
+        "Output Tokens Saved": "输出 Token 节省",
+        "Tool-Schema Deferral": "工具模式延迟",
+        "Overhead": "开销",
+        "TTFB": "首字节",
+        "Throughput": "吞吐量",
+        "Input (wall / active p50)": "输入 (挂钟 / 活跃 p50)",
+        "Compression (p50 / p95)": "压缩 (p50 / p95)",
+        "Forward (p50 / p95)": "转发 (p50 / p95)",
+        "Generation (p50 / p95)": "生成 (p50 / p95)",
+        "Current 5m (active p50):": "当前 5 分钟 (活跃 p50):",
+        "Performance": "性能",
+        "Overhead Range": "开销范围",
+        "TTFB Range": "首字节范围",
+        "Failed Requests": "失败请求",
+        "Pipeline Breakdown": "管道分解",
+        "Token Usage": "Token 用量",
+        "Before Compression": "压缩前",
+        "After Compression (sent)": "压缩后 (已发送)",
+        "Proxy Removed": "代理移除",
+        "Output Tokens": "输出 Token",
+        "What Headroom Removed": "Headroom 移除了什么",
+        "No waste signals detected yet. Data appears after requests are processed.": "尚未检测到废弃物信号。数据将在请求处理完成后出现。",
+        "Savings Over Time": "节省趋势",
+        "Trend data will appear after multiple requests.": "趋势数据将在多次请求后出现。",
+        "Prefix Cache Impact": "前缀缓存影响",
+        "Cache Writes": "缓存写入",
+        "Hit Rate": "命中率",
+        "Cache Busts": "缓存失效",
+        "Providers": "提供商",
+        "Cache Efficiency": "缓存效率",
+        "Observed TTL Buckets": "观察到的 TTL 桶",
+        "Provider-reported cache write mix": "提供商报告的缓存写入分布",
+        "Bucket Mix": "桶分布",
+        "Observed write-token split": "观察到的写入 Token 分割",
+        "Compression vs Cache": "压缩 vs 缓存",
+        "Cache Miss Attribution": "缓存未命中归因",
+        "Agent Usage": "代理用量",
+        "Before and after token usage by detected client": "按检测到的客户端划分的 Token 用量前后对比",
+        "Before": "压缩前",
+        "After": "压缩后",
+        "Saved": "已节省",
+        "Savings": "节省率",
+        "Token flow": "Token 流向",
+        "Share": "占比",
+        "Per-Model Token Savings": "按模型 Token 节省",
+        "Exact tokens saved per model": "按模型精确 Token 节省",
+        "Model": "模型",
+        "Reduction": "缩减",
+        "Tokens Saved": "Token 已节省",
+        "Tokens Sent": "Token 已发送",
+        "Recent Requests": "最近请求",
+        "Time": "时间",
+        "Input": "输入",
+        "Output": "输出",
+        "Latency": "延迟",
+        "Original Tokens": "原始 Token",
+        "Compressed Tokens": "已压缩 Token",
+        "Tokens Removed": "已移除 Token",
+        "Optimization Time": "优化耗时",
+        "Transforms Applied": "已应用转换",
+        "Waste Detected": "检测到废弃物",
+        "No requests yet. Start using the proxy to see activity here.": "暂无请求。开始使用代理即可看到活动。",
+        "Anthropic Subscription Window": "Anthropic 订阅窗口",
+        "Extra Usage (Overage)": "超额用量",
+        "Headroom Contribution This Window": "此窗口 Headroom 贡献",
+        "Efficiency": "效率",
+        "Compression": "压缩",
+        "Cache Reads": "缓存读取",
+        "Raw vs Submitted": "原始 vs 已提交",
+        "Forwarded to Anthropic": "转发至 Anthropic",
+        "Saved by Headroom": "Headroom 节省",
+        "OpenAI Codex Rate-Limit Window": "OpenAI Codex 速率限制窗口",
+        "Primary": "主窗口",
+        "Secondary": "次窗口",
+        "Credits": "积分",
+        "GitHub Copilot Quota": "GitHub Copilot 配额",
+        "Monthly Reset": "每月重置",
+        "Month start": "月初",
+
+        // Lifetime view
+        "Lifetime data since": "累计数据自",
+        "Full metric coverage since": "完整指标覆盖自",
+        "Durable local savings history from": "持久本地节省历史自",
+        "Persistence healthy": "持久化正常",
+        "Attempted Input": "尝试输入",
+        "Input cost": "输入成本",
+        "Compression saved": "压缩节省",
+        "Prefix Cache saved": "前缀缓存节省",
+        "Hits / requests": "命中 / 请求",
+        "Read / write": "读取 / 写入",
+        "Cache bust": "缓存失效",
+        "Waste Signals": "废弃物信号",
+        "Stacks": "技术栈",
+        "Top Models + Other": "热门模型及其他",
+        "Per-Project Savings": "按项目节省",
+        "No per-project data yet.": "暂无项目数据。",
+        "Project": "项目",
+        "Last Active": "最近活跃",
+
+        // History view
+        "Historical Proxy Compression": "历史代理压缩",
+        "Export JSON": "导出 JSON",
+        "Export CSV": "导出 CSV",
+        "Lifetime Compression Savings": "累计压缩节省",
+        "Lifetime Tokens Saved": "累计 Token 节省",
+        "Active Days": "活跃天数",
+        "Average Saved / Day": "平均每日节省",
+        "Average Saved / Week": "平均每周节省",
+        "Based on persisted daily buckets": "基于持久化每日桶数据",
+        "Based on persisted weekly buckets": "基于持久化每周桶数据",
+        "CLI output filtering (lifetime)": "CLI 输出过滤 (累计)",
+        "Daily Savings": "每日节省",
+        "Weekly Savings": "每周节省",
+        "Monthly Savings": "每月节省",
+        "Historical Savings Trend": "历史节省趋势",
+        "Per-Model Breakdown": "按模型分解",
+        "Cost with Headroom": "使用 Headroom 成本",
+        "Expected cost without Headroom": "不使用 Headroom 预期成本",
+        "Historical Summary": "历史摘要",
+        "Latest total": "最新总计",
+        "Selected series": "已选序列",
+        "Selected points": "已选数据点",
+        "Average / month": "平均 / 月",
+        "Retention": "保留期",
+        "Recent Historical Checkpoints": "最近历史检查点",
+        "Cumulative proxy compression savings": "累计代理压缩节省",
+        "No persisted savings history yet": "尚无持久化节省历史",
+
+        // Live Feed drawer
+        "Message Transformations": "消息转换",
+
+        // Cache details
+        "Net": "净值",
+        "Saved by Compression": "压缩节省",
+        "Lost to Cache Busts": "缓存失效损失",
+        "Prefix Freeze Net": "前缀冻结净值",
+        "TTL Expiry": "TTL 过期",
+        "Prefix Change": "前缀变化",
+        "Unknown": "未知",
+        "Total Misses": "总未命中",
+        "Mostly TTL lapse": "主要为 TTL 过期",
+        "Mostly prefix change": "主要为前缀变化",
+        "Per-Provider Breakdown": "按提供商分解",
+
+        // Cost chart
+        "Actual cost (with Headroom)": "实际成本 (使用 Headroom)",
+        "Expected cost (without Headroom)": "预期成本 (不使用 Headroom)",
+
+        // Footer
+        "Press": "按",
+        "to refresh": "刷新",
+        "Documentation": "文档",
+
+        // Misc
+        "Coverage:": "覆盖率:",
+        "not installed": "未安装",
+        "no activity since restart": "重启后无活动",
+        "with cache data": "含缓存数据",
+        "tokens removed before send": "发送前移除的 token",
+        "saved minus bust losses": "节省减去失效损失",
+        "expected a cache hit, got none": "期望缓存命中，实际未命中",
+        "stable prefix, within TTL": "前缀稳定，在 TTL 内",
+        "No requests yet": "暂无请求",
+        "last 25 — click row to expand": "最近 25 条 — 点击行展开",
+        "Proxy compression only": "仅代理压缩",
+        "Tokens": "Token 数",
+        "Cost": "成本",
+        "Prefix Cache": "前缀缓存",
+        "Sent": "已发送",
+        "proxy": "代理",
+        "Net positive": "净正向",
+        "Net negative": "净负向",
+        "Balanced": "均衡",
+        "1h leaning": "偏 1h",
+        "5m leaning": "偏 5m",
+        "Checkpoints": "检查点",
+        "Daily": "每日",
+        "Weekly": "每周",
+        "Monthly": "每月",
+        "Tokens saved": "Token 已节省",
+        "\u221e Unlimited": "\u221e 无限制",
+        "No Credits": "无积分",
+        "Active": "活跃",
+        "Overage allowed": "允许超额",
+        "No overage": "无超额",
+        "Pay-as-you-go credits balance": "即用即付积分余额",
+        "Unlimited": "无限制",
+        "Show all models": "显示所有模型",
+        "Show only this model": "仅显示此模型",
+        "Show only this model in the chart": "在图表中仅显示此模型",
+        "Tool-definition tokens deferred out of context": "工具定义 Token 已延迟出上下文",
+        "\u00b7 target": "\u00b7 目标",
+        "\u00b7 95% CI": "\u00b7 95% 置信区间",
+        "Resets in": "重置于",
+        "requests": "请求",
+        "tokens": "tokens",
+        "\u00d7": "\u00d7",
+        "/stats-history": "/stats-history",
+        "/stats-lifetime": "/stats-lifetime",
+        "Enable the output shaper (HEADROOM_OUTPUT_SHAPER=1) and run": "启用输出塑形器 (HEADROOM_OUTPUT_SHAPER=1) 并运行",
+        "to start measuring.": "开始测量。",
+        "Proxy compression only": "仅代理压缩",
+        "Waiting for saved requests": "等待已保存的请求",
+        "Persisted locally": "本地持久化",
+        "Lifetime totals — attributed requests only": "累计总计 — 仅已归因请求",
+        "of attributed — idle past cache TTL": "已归因 — 空闲超过缓存 TTL",
+        "of attributed — cached prefix shifted": "已归因 — 缓存前缀已变化",
+        "Why turns that expected a prompt-cache hit missed — TTL lapse (consider a longer TTL) vs the cacheable prefix changing": "为何预期前缀缓存命中的轮次未命中 — TTL 过期 (考虑更长的 TTL) vs 可缓存前缀变化",
+        "Tokens saved by compression against cached-prefix tokens its mutations invalidated": "压缩节省的 Token 对比因其变更而失效的缓存前缀 Token",
+    }
+};
+
+// t(key) — look up translation; fall back to key itself for en
+function t(key) {
+    const lang = localStorage.getItem('headroom-lang') || 'en';
+    if (lang === 'en' || !key) return key;
+    const dict = I18N[lang] || {};
+    return dict[key] || key;
+}
+
+// Initialize language from localStorage on page load
+document.addEventListener('alpine:init', () => {
+    const saved = localStorage.getItem('headroom-lang') || 'en';
+    document.documentElement.lang = saved;
+});
+</script>
+
 </head>
 <body class="text-gray-200 min-h-screen" x-data="dashboard()" x-init="init()">
     <!-- Header -->
@@ -115,63 +375,68 @@
             <div class="inline-flex rounded-lg border border-border bg-surface p-1">
                     <button class="px-3 py-1.5 text-sm rounded-md transition-colors"
                             :class="viewMode === 'session' ? 'bg-accent text-black' : 'text-gray-400 hover:text-gray-200'"
-                            @click="setViewMode('session')">
+                            @click="setViewMode('session')" x-text="t('Session')">
                         Session
                     </button>
                     <button class="px-3 py-1.5 text-sm rounded-md transition-colors"
                             :class="viewMode === 'lifetime' ? 'bg-accent text-black' : 'text-gray-400 hover:text-gray-200'"
-                            @click="setViewMode('lifetime')">
+                            @click="setViewMode('lifetime')" x-text="t('Lifetime')">
                         Lifetime
                     </button>
                     <button class="px-3 py-1.5 text-sm rounded-md transition-colors"
                         :class="viewMode === 'history' ? 'bg-accent text-black' : 'text-gray-400 hover:text-gray-200'"
-                        @click="setViewMode('history')">
+                        @click="setViewMode('history')" x-text="t('Historical')">
                     Historical
                 </button>
             </div>
             <template x-if="stats.anon_telemetry_shipping">
                 <div class="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-1"
-                     title="Anonymous aggregate telemetry is enabled. Disable with HEADROOM_TELEMETRY=off or --no-telemetry.">
+                     :title="t('Anonymous aggregate telemetry is enabled. Disable with HEADROOM_TELEMETRY=off or --no-telemetry.')">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
                          class="w-3 h-3 text-amber-400 shrink-0">
                         <path fill-rule="evenodd"
                               d="M6.701 2.25c.577-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804a1.5 1.5 0 0 1-1.3-2.25l5.197-9ZM8 4a.75.75 0 0 1 .75.75v3a.75.75 0 0 1-1.5 0v-3A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
                               clip-rule="evenodd"/>
                     </svg>
-                    <span class="text-xs text-amber-400 font-medium">Anon Telemetry</span>
+                    <span class="text-xs text-amber-400 font-medium" x-text="t('Anon Telemetry')">Anon Telemetry</span>
                 </div>
             </template>
             <template x-if="stats.config && stats.config.savings_profile">
                 <div class="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/10 px-2.5 py-1"
-                     :title="'Current proxy profile: ' + stats.config.savings_profile">
+                     :title="t('Current proxy profile:') + ' ' + stats.config.savings_profile">
                     <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
                     <span class="text-xs text-cyan-100">
                         <span x-text="stats.config.savings_profile"></span>
                         <template x-if="stats.config.target_savings_percent !== null">
-                            <span x-text="' · target ' + stats.config.target_savings_percent + '%'"></span>
+                            <span x-text="t('· target') + ' ' + stats.config.target_savings_percent + '%'"></span>
                         </template>
                     </span>
                 </div>
             </template>
             <div class="flex items-center gap-2">
-                <span class="text-xs text-gray-500">Status</span>
+                <span class="text-xs text-gray-500" x-text="t('Status')">Status</span>
                 <span class="flex items-center gap-1.5">
                     <span class="w-2 h-2 rounded-full pulse-live"
                           :class="healthy ? 'bg-emerald-400' : 'bg-red-400'"></span>
-                    <span class="text-sm" x-text="healthy ? 'Healthy' : 'Error'"></span>
+                    <span class="text-sm" x-text="healthy ? t(t('Healthy')) : t(t('Error'))"></span>
                 </span>
             </div>
             <div class="text-xs text-gray-500">
-                Updated <span x-text="lastUpdate"></span>
+                <span x-text="t('Updated')">Updated</span> <span x-text="lastUpdate"></span>
             </div>
+            <select @change="setLang($event.target.value)" x-model="lang"
+                    class="text-xs rounded-md border border-border bg-surface text-gray-400 px-2 py-1.5 focus:outline-none focus:border-accent">
+                <option value="en">EN</option>
+                <option value="zh">中文</option>
+            </select>
             <a href="/dashboard/settings" id="settings-link"
                class="px-3 py-1.5 text-sm rounded-md border border-border bg-surface text-gray-400 hover:text-gray-200 transition-colors"
-               title="Settings">
+               :title="t('Settings')">
                 &#9881; Settings
             </a>
             <button onclick="toggleTheme()" id="theme-toggle"
                     class="px-3 py-1.5 text-sm rounded-md border border-border bg-surface text-gray-400 hover:text-gray-200 transition-colors"
-                    title="Toggle light/dark mode">
+                    :title="t('Toggle light/dark mode')">
                 <svg class="w-4 h-4 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                 </svg>
@@ -196,12 +461,12 @@
                 <!-- Runtime Overview -->
                 <div class="grid grid-cols-1 gap-4 mb-6 lg:grid-cols-2">
                     <section class="bg-surface rounded-lg p-4 border border-border">
-                        <h3 class="mb-3 text-sm font-medium text-gray-300">Request Health</h3>
-                        <div class="grid grid-cols-2 gap-3 text-sm"><div>Completed <span class="float-right tabular-nums" x-text="formatNumber(stats.requests?.total || 0)"></span></div><div>Failed <span class="float-right tabular-nums text-red-400" x-text="formatNumber(stats.requests?.failed || 0)"></span></div><div>Rate Limited <span class="float-right tabular-nums text-amber-400" x-text="formatNumber(stats.requests?.rate_limited || 0)"></span></div><div>Cached <span class="float-right tabular-nums text-cyan-400" x-text="formatNumber(stats.requests?.cached || 0)"></span></div></div>
+                        <h3 class="mb-3 text-sm font-medium text-gray-300" x-text="t('Request Health')">Request Health</h3>
+                        <div class="grid grid-cols-2 gap-3 text-sm"><div><span x-text="t('Completed')">Completed</span> <span class="float-right tabular-nums" x-text="formatNumber(stats.requests?.total || 0)"></span></div><div><span x-text="t('Failed')">Failed</span> <span class="float-right tabular-nums text-red-400" x-text="formatNumber(stats.requests?.failed || 0)"></span></div><div><span x-text="t('Rate Limited')">Rate Limited</span> <span class="float-right tabular-nums text-amber-400" x-text="formatNumber(stats.requests?.rate_limited || 0)"></span></div><div><span x-text="t('Cached')">Cached</span> <span class="float-right tabular-nums text-cyan-400" x-text="formatNumber(stats.requests?.cached || 0)"></span></div></div>
                     </section>
                     <section class="bg-surface rounded-lg p-4 border border-border">
-                        <h3 class="mb-3 text-sm font-medium text-gray-300">Live Activity</h3>
-                        <div class="grid grid-cols-2 gap-3 text-sm"><div>Active Requests <span class="float-right tabular-nums" x-text="formatNumber(stats.proxy_inbound?.active || 0)"></span></div><div>Active WebSockets <span class="float-right tabular-nums" x-text="formatNumber(stats.runtime?.websocket_sessions?.active_sessions || 0)"></span></div><div>Relay Tasks <span class="float-right tabular-nums" x-text="formatNumber(stats.runtime?.websocket_sessions?.active_relay_tasks || 0)"></span></div><div>Compression Queued <span class="float-right tabular-nums" x-text="formatNumber(stats.runtime?.compression_executor?.queued || 0)"></span></div></div>
+                        <h3 class="mb-3 text-sm font-medium text-gray-300" x-text="t('Live Activity')">Live Activity</h3>
+                        <div class="grid grid-cols-2 gap-3 text-sm"><div><span x-text="t('Active Requests')">Active Requests</span> <span class="float-right tabular-nums" x-text="formatNumber(stats.proxy_inbound?.active || 0)"></span></div><div><span x-text="t('Active WebSockets')">Active WebSockets</span> <span class="float-right tabular-nums" x-text="formatNumber(stats.runtime?.websocket_sessions?.active_sessions || 0)"></span></div><div><span x-text="t('Relay Tasks')">Relay Tasks</span> <span class="float-right tabular-nums" x-text="formatNumber(stats.runtime?.websocket_sessions?.active_relay_tasks || 0)"></span></div><div><span x-text="t('Compression Queued')">Compression Queued</span> <span class="float-right tabular-nums" x-text="formatNumber(stats.runtime?.compression_executor?.queued || 0)"></span></div></div>
                     </section>
                 </div>
 
@@ -209,7 +474,7 @@
                 <div class="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2 lg:grid-cols-3">
                     <!-- Token Savings (%) -->
                     <div class="bg-surface rounded-lg p-4 border border-border">
-                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Token Savings</div>
+                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Token Savings')">Token Savings</div>
                         <div class="flex items-baseline gap-2">
                             <span class="text-3xl font-light tabular-nums text-accent" x-text="formatNumber(stats.tokens?.saved || 0)"></span>
                             <!-- Active compression ratio: savings as a fraction of tokens we
@@ -218,15 +483,15 @@
                                  that don't yet wire per-message live-zone tracking), fall back
                                  to the whole-request ratio so the headline doesn't collapse to
                                  0% while compression is happening (issue #455). -->
-                            <span class="text-sm text-accent" x-text="headlineSavingsPercent.toFixed(1) + '%'" :title="headlineSavingsTitle"></span>
+                            <span class="text-sm text-accent" x-text="headlineSavingsPercent.toFixed(1) + '%'" ::title="t('headlineSavingsTitle')"></span>
                         </div>
                         <div class="mt-1 text-xs text-gray-500 leading-relaxed">
-                            <span x-text="'Proxy ' + formatNumber(stats.tokens?.proxy_compression_saved || 0) + ' (' + proxyShareOfTotal.toFixed(1) + '%)'"></span>
+                            <span x-text="t('Proxy') + ' ' + formatNumber(stats.tokens?.proxy_compression_saved || 0) + ' (' + proxyShareOfTotal.toFixed(1) + '%)'"></span>
                             <span class="mx-1 text-gray-600">/</span>
-                            <span x-text="cliFilteringAvailable ? (cliFilteringLabel + ' ' + formatNumber(cliFilteringSaved) + ' this session (' + cliFilteringSessionPctDisplay.toFixed(1) + '%)') : (cliFilteringLabel + ' not installed')"></span>
+                            <span x-text="cliFilteringAvailable ? (cliFilteringLabel + ' ' + formatNumber(cliFilteringSaved) + ' this session (' + cliFilteringSessionPctDisplay.toFixed(1) + '%)') : (cliFilteringLabel + " + ' ' + t('not installed') + ")"></span>
                         </div>
                         <div class="mt-1 text-xs text-gray-600 leading-relaxed">
-                            <span x-text="'Of total wire: ' + (stats.tokens?.savings_percent || 0).toFixed(2) + '%'" title="Savings as fraction of all input tokens including frozen prefix"></span>
+                            <span x-text="t('Of total wire:') + ' ' + (stats.tokens?.savings_percent || 0).toFixed(2) + '%'" :title="t('Savings as fraction of all input tokens including frozen prefix')"></span>
                         </div>
                         <div class="mt-2 h-8">
                             <svg class="w-full h-full" viewBox="0 0 100 32" preserveAspectRatio="none">
@@ -244,7 +509,7 @@
 
                     <!-- Output Tokens Saved (counterfactual) -->
                     <div class="bg-surface rounded-lg p-4 border border-border">
-                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Output Tokens Saved</div>
+                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Output Tokens Saved')">Output Tokens Saved</div>
                         <template x-if="stats.tokens?.output_reduction?.available">
                             <div>
                                 <div class="flex items-baseline gap-2">
@@ -256,10 +521,10 @@
                                     <span class="uppercase tracking-wide"
                                           :class="stats.tokens?.output_reduction?.method === 'measured' ? 'text-emerald-400' : 'text-gray-400'"
                                           x-text="stats.tokens?.output_reduction?.method || ''"></span>
-                                    <span x-text="'· 95% CI ' + (stats.tokens?.output_reduction?.ci_low_percent || 0).toFixed(1) + '–' + (stats.tokens?.output_reduction?.ci_high_percent || 0).toFixed(1) + '%'"></span>
+                                    <span x-text="t('· 95% CI') + ' ' + (stats.tokens?.output_reduction?.ci_low_percent || 0).toFixed(1) + '–' + (stats.tokens?.output_reduction?.ci_high_percent || 0).toFixed(1) + '%'"></span>
                                 </div>
                                 <div class="mt-1 text-xs text-gray-600 leading-relaxed"
-                                     x-text="formatNumber(stats.tokens?.output_reduction?.requests || 0) + ' shaped responses · counterfactual'">
+                                     x-text="formatNumber(stats.tokens?.output_reduction?.requests || 0) + ' ' + t('shaped responses · counterfactual')">
                                 </div>
                             </div>
                         </template>
@@ -275,13 +540,13 @@
                     <!-- Tool-Schema Deferral (tool search) — only rendered when there's a saving to show -->
                     <template x-if="(stats.savings?.by_layer?.tool_search?.tokens || 0) > 0">
                         <div class="bg-surface rounded-lg p-4 border border-border">
-                            <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Tool-Schema Deferral</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Tool-Schema Deferral')">Tool-Schema Deferral</div>
                             <div class="flex items-baseline gap-2">
                                 <span class="text-3xl font-light tabular-nums text-emerald-400" x-text="formatNumber(stats.savings?.by_layer?.tool_search?.tokens || 0)"></span>
                                 <span class="text-sm text-gray-400">tokens</span>
                             </div>
                             <div class="mt-1 text-xs text-gray-600 leading-relaxed"
-                                 x-text="formatNumber(stats.savings?.by_layer?.tool_search?.requests || 0) + ' calls · tool schemas deferred (recent window)'">
+                                 x-text="formatNumber(stats.savings?.by_layer?.tool_search?.requests || 0) + ' ' + t('calls · tool schemas deferred (recent window)')">
                             </div>
                         </div>
                     </template>
@@ -291,7 +556,7 @@
                 <div class="grid grid-cols-1 gap-4 mb-6 lg:grid-cols-3">
                     <!-- Headroom Overhead -->
                     <div class="bg-surface rounded-lg p-4 border border-border">
-                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Overhead</div>
+                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Overhead')">Overhead</div>
                         <div class="flex items-baseline gap-2">
                             <span class="text-3xl font-light tabular-nums" x-text="(stats.overhead?.average_ms || 0).toFixed(0) + 'ms'"></span>
                         </div>
@@ -303,7 +568,7 @@
                     <!-- Token Throughput -->
                     <div class="bg-surface rounded-lg p-4 border border-border flex flex-col justify-between">
                         <div>
-                            <div class="text-xs text-gray-500 uppercase tracking-wide mb-1.5">Throughput</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-wide mb-1.5" x-text="t('Throughput')">Throughput</div>
                             <div class="flex flex-col gap-1 text-[11px] text-gray-300">
                                 <div class="flex justify-between items-baseline border-b border-border/40 pb-0.5">
                                     <span class="text-gray-500">Input (wall / active p50)</span>
@@ -346,25 +611,25 @@
 
                     <!-- Performance -->
                     <div class="bg-surface rounded-lg p-4 border border-border">
-                        <div class="text-sm font-medium mb-4 text-gray-300">Performance</div>
+                        <div class="text-sm font-medium mb-4 text-gray-300" x-text="t('Performance')">Performance</div>
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-400">Overhead Range</span>
+                                <span class="text-sm text-gray-400" x-text="t('Overhead Range')">Overhead Range</span>
                                 <span class="font-mono text-sm" x-text="(stats.overhead?.min_ms || 0).toFixed(0) + ' - ' + (stats.overhead?.max_ms || 0).toFixed(0) + 'ms'"></span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-400">TTFB Range</span>
+                                <span class="text-sm text-gray-400" x-text="t('TTFB Range')">TTFB Range</span>
                                 <span class="font-mono text-sm" x-text="((stats.ttfb?.min_ms || 0) / 1000).toFixed(2) + ' - ' + ((stats.ttfb?.max_ms || 0) / 1000).toFixed(2) + 's'"></span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-400">Failed Requests</span>
+                                <span class="text-sm text-gray-400" x-text="t('Failed Requests')">Failed Requests</span>
                                 <span class="font-mono text-sm" x-text="stats.requests?.failed || 0"></span>
                             </div>
                             <!-- Per-transform timing breakdown -->
                             <template x-if="Object.keys(stats.pipeline_timing || {}).length > 0">
                                 <div>
                                     <div class="border-t border-border my-2"></div>
-                                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Pipeline Breakdown</div>
+                                    <div class="text-xs text-gray-500 uppercase tracking-wide mb-2" x-text="t('Pipeline Breakdown')">Pipeline Breakdown</div>
                                     <template x-for="[name, t] in Object.entries(stats.pipeline_timing || {})" :key="name">
                                         <div class="flex justify-between items-center mb-1">
                                             <span class="text-xs text-gray-400 font-mono truncate mr-2" x-text="name"></span>
@@ -383,10 +648,10 @@
                 <div class="grid grid-cols-1 gap-4 mb-6 lg:grid-cols-3">
                     <!-- Token Usage -->
                     <div class="bg-surface rounded-lg p-4 border border-border">
-                        <div class="text-sm font-medium mb-4 text-gray-300">Token Usage</div>
+                        <div class="text-sm font-medium mb-4 text-gray-300" x-text="t('Token Usage')">Token Usage</div>
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-400">Before Compression</span>
+                                <span class="text-sm text-gray-400" x-text="t('Before Compression')">Before Compression</span>
                                 <span class="font-mono text-sm" x-text="formatNumber(stats.tokens?.total_before_compression || 0)"></span>
                             </div>
                             <div class="flex justify-between items-center" x-show="cliFilteringAvailable">
@@ -402,12 +667,12 @@
                                 <span class="font-mono text-sm text-accent" x-text="formatNumber(stats.tokens?.proxy_compression_saved || 0)"></span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-400">After Compression (sent)</span>
+                                <span class="text-sm text-gray-400" x-text="t('After Compression (sent)')">After Compression (sent)</span>
                                 <span class="font-mono text-sm" x-text="formatNumber(stats.tokens?.input || 0)"></span>
                             </div>
                             <div class="border-t border-border my-2"></div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-400">Output Tokens</span>
+                                <span class="text-sm text-gray-400" x-text="t('Output Tokens')">Output Tokens</span>
                                 <span class="font-mono text-sm" x-text="formatNumber(stats.tokens?.output || 0)"></span>
                             </div>
                         </div>
@@ -415,7 +680,7 @@
 
                     <!-- What Headroom Removed -->
                     <div class="bg-surface rounded-lg p-4 border border-border">
-                        <div class="text-sm font-medium mb-4 text-gray-300">What Headroom Removed</div>
+                        <div class="text-sm font-medium mb-4 text-gray-300" x-text="t('What Headroom Removed')">What Headroom Removed</div>
                         <template x-if="Object.keys(stats.waste_signals || {}).length > 0">
                             <div class="space-y-3">
                                 <template x-for="[signal, tokens] in sortedWasteSignals" :key="signal">
@@ -443,7 +708,7 @@
                     <!-- Cumulative Savings Trend -->
                     <div class="bg-surface rounded-lg p-4 border border-border">
                         <div class="flex justify-between items-center mb-4">
-                            <span class="text-sm font-medium text-gray-300">Savings Over Time</span>
+                            <span class="text-sm font-medium text-gray-300" x-text="t('Savings Over Time')">Savings Over Time</span>
                             <span class="text-xs text-gray-500 font-mono" x-text="formatNumber(stats.tokens?.saved || 0) + ' tokens total'"></span>
                         </div>
                         <template x-if="(stats.savings_history || []).length >= 2">
@@ -472,17 +737,17 @@
                 <template x-if="cacheSessionActive">
                     <div class="bg-surface rounded-lg p-4 border border-border mb-6">
                         <div class="flex justify-between items-center mb-3">
-                            <div class="text-sm font-medium text-gray-300">Prefix Cache Impact</div>
+                            <div class="text-sm font-medium text-gray-300" x-text="t('Prefix Cache Impact')">Prefix Cache Impact</div>
                             <div class="text-xs text-emerald-400 font-mono"
                                  x-show="cacheSessionActive"
-                                 x-text="'Net savings: $' + formatCurrency(stats.prefix_cache?.totals?.net_savings_usd || 0)"></div>
+                                 x-text="t('Net savings:') + ' $' + formatCurrency(stats.prefix_cache?.totals?.net_savings_usd || 0)"></div>
                             <div class="text-xs text-gray-500 font-mono"
                                  x-show="!cacheSessionActive">no activity since restart</div>
                         </div>
                         <!-- Totals row -->
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                             <div>
-                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Cache Writes</div>
+                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Cache Writes')">Cache Writes</div>
                                 <div class="text-2xl font-light tabular-nums text-amber-400"
                                      x-show="cacheSessionActive"
                                      x-text="formatNumber(stats.prefix_cache?.totals?.cache_write_tokens || 0)"></div>
@@ -490,26 +755,26 @@
                                      x-show="!cacheSessionActive">&mdash;</div>
                                 <div class="text-xs text-amber-400/70"
                                      x-show="cacheSessionActive"
-                                     x-text="'$' + formatCurrency(stats.prefix_cache?.totals?.write_premium_usd || 0) + ' write premium'"></div>
+                                     x-text="'$' + formatCurrency(stats.prefix_cache?.totals?.write_premium_usd || 0) + ' ' + t('write premium')"></div>
                                 <div class="text-xs text-gray-500"
                                      x-show="!cacheSessionActive">no activity since restart</div>
                             </div>
                             <div>
-                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Hit Rate</div>
+                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Hit Rate')">Hit Rate</div>
                                 <div class="text-2xl font-light tabular-nums" x-show="cacheSessionActive" :class="(stats.prefix_cache?.totals?.hit_rate || 0) > 80 ? 'text-emerald-400' : (stats.prefix_cache?.totals?.hit_rate || 0) > 50 ? 'text-amber-400' : 'text-red-400'" x-text="(stats.prefix_cache?.totals?.hit_rate || 0).toFixed(0) + '%'"></div>
                                 <div class="text-2xl font-light tabular-nums text-gray-600" x-show="!cacheSessionActive">&mdash;</div>
                                 <div class="text-xs text-gray-500" x-show="cacheSessionActive" x-text="(stats.prefix_cache?.totals?.hit_requests || 0) + ' / ' + (stats.prefix_cache?.totals?.requests || 0) + ' requests'"></div>
                                 <div class="text-xs text-gray-500" x-show="!cacheSessionActive">no activity since restart</div>
                             </div>
                             <div>
-                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Cache Busts</div>
+                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Cache Busts')">Cache Busts</div>
                                 <div class="text-2xl font-light tabular-nums" x-show="cacheSessionActive" :class="(stats.prefix_cache?.totals?.bust_count || 0) > 5 ? 'text-red-400' : (stats.prefix_cache?.totals?.bust_count || 0) > 0 ? 'text-amber-400' : 'text-emerald-400'" x-text="stats.prefix_cache?.totals?.bust_count || 0"></div>
                                 <div class="text-2xl font-light tabular-nums text-gray-600" x-show="!cacheSessionActive">&mdash;</div>
                                 <div class="text-xs text-gray-500" x-show="cacheSessionActive" x-text="formatNumber(stats.prefix_cache?.totals?.bust_write_tokens || 0) + ' tokens re-written'"></div>
                                 <div class="text-xs text-gray-500" x-show="!cacheSessionActive">no activity since restart</div>
                             </div>
                             <div>
-                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Providers</div>
+                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Providers')">Providers</div>
                                 <div class="text-2xl font-light tabular-nums text-gray-300" x-show="cacheSessionActive" x-text="Object.keys(stats.prefix_cache?.by_provider || {}).length"></div>
                                 <div class="text-2xl font-light tabular-nums text-gray-600" x-show="!cacheSessionActive">&mdash;</div>
                                 <div class="text-xs text-gray-500" x-show="cacheSessionActive">with cache data</div>
@@ -519,7 +784,7 @@
                         <!-- Cache efficiency bar (session-scoped; hidden until traffic arrives) -->
                         <div x-show="cacheSessionActive">
                             <div class="flex justify-between text-xs text-gray-500 mb-1">
-                                <span>Cache Efficiency</span>
+                                <span x-text="t('Cache Efficiency')">Cache Efficiency</span>
                                 <span x-text="cacheSavingsPercent + '% of input served from cache'"></span>
                             </div>
                             <div class="w-full h-3 bg-border rounded-full overflow-hidden flex">
@@ -538,7 +803,7 @@
                             <div class="mt-5 border-t border-border pt-4">
                                 <div class="flex items-center justify-between mb-3">
                                     <div>
-                                        <div class="text-xs text-gray-500 uppercase tracking-[0.22em]">Observed TTL Buckets</div>
+                                        <div class="text-xs text-gray-500 uppercase tracking-[0.22em]" x-text="t('Observed TTL Buckets')">Observed TTL Buckets</div>
                                         <div class="text-sm text-gray-300 mt-1">Provider-reported cache write mix</div>
                                     </div>
                                     <div class="text-xs text-gray-500 font-mono" x-text="observedTtlWindowLabel"></div>
@@ -593,7 +858,7 @@
                             <div class="mt-5 border-t border-border pt-4">
                                 <div class="flex items-center justify-between mb-3">
                                     <div>
-                                        <div class="text-xs text-gray-500 uppercase tracking-wide">Compression vs Cache</div>
+                                        <div class="text-xs text-gray-500 uppercase tracking-wide" x-text="t('Compression vs Cache')">Compression vs Cache</div>
                                         <div class="text-[11px] text-gray-600 mt-0.5">Tokens saved by compression against cached-prefix tokens its mutations invalidated</div>
                                     </div>
                                     <div data-testid="cvc-net-headline" class="rounded-full border bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.18em]" :class="compressionVsCacheNet >= 0 ? 'border-emerald-400/20 text-emerald-300/90' : 'border-red-400/25 text-red-300/90'" x-text="compressionVsCacheNet >= 0 ? 'Net positive' : 'Net negative'"></div>
@@ -610,7 +875,7 @@
                                         <div class="mt-1 text-xs text-gray-500" x-text="formatNumber(stats.prefix_cache?.compression_vs_cache?.cache_bust_count || 0) + ' busts observed'"></div>
                                     </div>
                                     <div class="rounded-2xl border border-white/8 bg-black/20 p-4">
-                                        <div class="text-[11px] uppercase tracking-[0.18em] text-gray-400">Net</div>
+                                        <div class="text-[11px] uppercase tracking-[0.18em] text-gray-400" x-text="t('Net')">Net</div>
                                         <div data-testid="cvc-net-value" class="mt-2 text-3xl font-light" :class="compressionVsCacheNet >= 0 ? 'text-emerald-400' : 'text-red-400'" x-text="(compressionVsCacheNet >= 0 ? '+' : '-') + formatNumber(Math.abs(compressionVsCacheNet))"></div>
                                         <div class="mt-1 text-xs text-gray-500">saved minus bust losses</div>
                                     </div>
@@ -627,7 +892,7 @@
                             <div class="mt-5 border-t border-border pt-4">
                                 <div class="flex items-center justify-between mb-3">
                                     <div>
-                                        <div class="text-xs text-gray-500 uppercase tracking-wide">Cache Miss Attribution</div>
+                                        <div class="text-xs text-gray-500 uppercase tracking-wide" x-text="t('Cache Miss Attribution')">Cache Miss Attribution</div>
                                         <div class="text-[11px] text-gray-600 mt-0.5">Why turns that expected a prompt-cache hit missed — TTL lapse (consider a longer TTL) vs the cacheable prefix changing</div>
                                     </div>
                                     <div data-testid="miss-attr-headline" class="rounded-full border bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.18em]"
@@ -661,7 +926,7 @@
                         <!-- Per-provider breakdown -->
                         <template x-if="Object.keys(stats.prefix_cache?.by_provider || {}).length > 0">
                             <div class="mt-4 border-t border-border pt-3">
-                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Per-Provider Breakdown</div>
+                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-2" x-text="t('Per-Provider Breakdown')">Per-Provider Breakdown</div>
                                 <div class="space-y-3">
                                     <template x-for="[prov, pc] in Object.entries(stats.prefix_cache?.by_provider || {})" :key="prov">
                                         <div class="flex items-center justify-between">
@@ -670,7 +935,7 @@
                                                 <span class="text-xs text-gray-500" x-text="pc.label"></span>
                                             </div>
                                             <div class="flex flex-wrap items-center justify-end gap-4 text-xs font-mono">
-                                                <span class="text-emerald-400" x-text="formatNumber(pc.cache_read_tokens) + ' reads (' + pc.read_discount + ' off)'"></span>
+                                                <span class="text-emerald-400" x-text="formatNumber(pc.cache_read_tokens) + ' ' + t('reads') + ' (' + pc.read_discount + ' ' + t('off') + ')'"></span>
                                                 <template x-if="pc.write_premium !== 'none'">
                                                     <span class="text-amber-400" x-text="formatNumber(pc.cache_write_tokens) + ' writes (+' + pc.write_premium + ')'"></span>
                                                 </template>
@@ -693,11 +958,11 @@
                 <div class="bg-surface rounded-lg border border-border overflow-hidden mb-6">
                     <div class="px-4 py-3 border-b border-border flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                         <div>
-                            <div class="text-sm font-medium text-gray-300">Agent Usage</div>
+                            <div class="text-sm font-medium text-gray-300" x-text="t('Agent Usage')">Agent Usage</div>
                             <div class="text-xs text-gray-500">Before and after token usage by detected client</div>
                         </div>
                         <div class="flex flex-wrap items-center gap-3 text-xs">
-                            <span class="text-gray-500" x-text="'Coverage: ' + agentCoverageLabel"></span>
+                            <span class="text-gray-500" x-text="t('Coverage:') + ' ' + agentCoverageLabel"></span>
                             <span class="px-2 py-0.5 rounded border border-border bg-card-alt font-mono text-gray-400"
                                   x-text="formatNumber(stats.agent_usage?.totals?.requests || 0) + ' requests'"></span>
                         </div>
@@ -706,19 +971,19 @@
                     <div class="p-4">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-5">
                             <div class="rounded-lg border border-border bg-card-alt p-3">
-                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Before</div>
+                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Before')">Before</div>
                                 <div class="text-2xl font-light tabular-nums" x-text="formatNumber(stats.agent_usage?.totals?.before_tokens || 0)"></div>
                             </div>
                             <div class="rounded-lg border border-border bg-card-alt p-3">
-                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">After</div>
+                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('After')">After</div>
                                 <div class="text-2xl font-light tabular-nums text-gray-200" x-text="formatNumber(stats.agent_usage?.totals?.after_tokens || 0)"></div>
                             </div>
                             <div class="rounded-lg border border-border bg-card-alt p-3">
-                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Saved</div>
+                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Saved')">Saved</div>
                                 <div class="text-2xl font-light tabular-nums text-accent" x-text="formatNumber(stats.agent_usage?.totals?.tokens_saved || 0)"></div>
                             </div>
                             <div class="rounded-lg border border-border bg-card-alt p-3">
-                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Savings</div>
+                                <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Savings')">Savings</div>
                                 <div class="text-2xl font-light tabular-nums text-emerald-400" x-text="(stats.agent_usage?.totals?.savings_percent || 0).toFixed(1) + '%'"></div>
                             </div>
                         </div>
@@ -752,22 +1017,22 @@
                                                          :style="'width:' + agentAfterWidth(agent) + '%'"></div>
                                                 </div>
                                                 <div class="mt-1 flex flex-wrap gap-3 text-xs text-gray-500">
-                                                    <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Saved</span>
+                                                    <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-emerald-500"></span x-text="t('Saved')">Saved</span>
                                                     <span class="inline-flex items-center gap-1"><span class="h-2 w-2 rounded-full bg-accent/60"></span>Sent</span>
                                                 </div>
                                             </div>
 
                                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-right">
                                                 <div>
-                                                    <div class="text-[11px] uppercase tracking-wide text-gray-500">Before</div>
+                                                    <div class="text-[11px] uppercase tracking-wide text-gray-500" x-text="t('Before')">Before</div>
                                                     <div class="font-mono text-sm" x-text="formatNumber(agent.before_tokens || 0)"></div>
                                                 </div>
                                                 <div>
-                                                    <div class="text-[11px] uppercase tracking-wide text-gray-500">After</div>
+                                                    <div class="text-[11px] uppercase tracking-wide text-gray-500" x-text="t('After')">After</div>
                                                     <div class="font-mono text-sm" x-text="formatNumber(agent.after_tokens || 0)"></div>
                                                 </div>
                                                 <div>
-                                                    <div class="text-[11px] uppercase tracking-wide text-gray-500">Saved</div>
+                                                    <div class="text-[11px] uppercase tracking-wide text-gray-500" x-text="t('Saved')">Saved</div>
                                                     <div class="font-mono text-sm text-accent" x-text="formatNumber(agent.tokens_saved || 0)"></div>
                                                 </div>
                                                 <div>
@@ -791,7 +1056,7 @@
                 <div class="grid grid-cols-1 gap-4 mb-6 lg:grid-cols-3">
                     <!-- Providers -->
                     <div class="bg-surface rounded-lg p-4 border border-border">
-                        <div class="text-sm font-medium mb-4 text-gray-300">Providers</div>
+                        <div class="text-sm font-medium mb-4 text-gray-300" x-text="t('Providers')">Providers</div>
                         <div class="space-y-2">
                             <template x-for="(count, provider) in (stats.requests?.by_provider || {})" :key="provider">
                                 <div class="flex justify-between items-center">
@@ -806,7 +1071,7 @@
                                 </div>
                             </template>
                             <template x-if="Object.keys(stats.requests?.by_provider || {}).length === 0">
-                                <div class="text-sm text-gray-500 italic">No requests yet</div>
+                                <div class="text-sm text-gray-500 italic" x-text="t('No requests yet')">No requests yet</div>
                             </template>
                         </div>
                     </div>
@@ -815,7 +1080,7 @@
                     <template x-if="Object.keys(stats.cost?.per_model || {}).length > 0">
                         <div class="bg-surface rounded-lg border border-border overflow-hidden lg:col-span-2">
                             <div class="px-4 py-3 border-b border-border flex justify-between items-center">
-                                <span class="text-sm font-medium text-gray-300">Per-Model Token Savings</span>
+                                <span class="text-sm font-medium text-gray-300" x-text="t('Per-Model Token Savings')">Per-Model Token Savings</span>
                                 <span class="text-xs text-gray-500">Exact tokens saved per model</span>
                             </div>
                             <div class="overflow-x-auto">
@@ -860,7 +1125,7 @@
                 <!-- Recent Requests Table (with expandable rows) -->
                 <div class="bg-surface rounded-lg border border-border overflow-hidden mb-6">
                     <div class="px-4 py-3 border-b border-border flex justify-between items-center">
-                        <span class="text-sm font-medium text-gray-300">Recent Requests</span>
+                        <span class="text-sm font-medium text-gray-300" x-text="t('Recent Requests')">Recent Requests</span>
                         <span class="text-xs text-gray-500">Last 25 &mdash; click row to expand</span>
                     </div>
                     <div class="overflow-x-auto">
@@ -873,7 +1138,7 @@
                                 <div class="px-4 py-3 font-medium">Model</div>
                                 <div class="px-4 py-3 font-medium text-right">Input</div>
                                 <div class="px-4 py-3 font-medium text-right">Output</div>
-                                <div class="px-4 py-3 font-medium text-right">Saved</div>
+                                <div class="px-4 py-3 font-medium text-right" x-text="t('Saved')">Saved</div>
                                 <div class="px-4 py-3 font-medium text-right">Latency</div>
                             </div>
                             <!-- Data rows -->
@@ -922,7 +1187,7 @@
                                                 <!-- Transforms Applied -->
                                                 <template x-if="(req.transforms_applied || []).length > 0">
                                                     <div class="mt-3">
-                                                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Transforms Applied</div>
+                                                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Transforms Applied')">Transforms Applied</div>
                                                         <div class="flex flex-wrap gap-1">
                                                             <template x-for="t in req.transforms_applied" :key="t">
                                                                 <span class="px-2 py-0.5 bg-border rounded text-xs font-mono" x-text="t"></span>
@@ -933,7 +1198,7 @@
                                                 <!-- Waste Signals for this request -->
                                                 <template x-if="req.waste_signals && Object.keys(req.waste_signals).length > 0">
                                                     <div class="mt-3">
-                                                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1">Waste Detected</div>
+                                                        <div class="text-xs text-gray-500 uppercase tracking-wide mb-1" x-text="t('Waste Detected')">Waste Detected</div>
                                                         <div class="flex flex-wrap gap-2">
                                                             <template x-for="[signal, tokens] in Object.entries(req.waste_signals).filter(([,v]) => v > 0)" :key="signal">
                                                                 <span class="px-2 py-0.5 rounded text-xs font-mono"
@@ -962,7 +1227,7 @@
                 <template x-if="stats.subscription_window && stats.subscription_window.latest">
                     <div class="bg-surface rounded-lg p-4 border border-border mb-6">
                         <div class="flex justify-between items-center mb-4">
-                            <div class="text-sm font-medium text-gray-300">Anthropic Subscription Window</div>
+                            <div class="text-sm font-medium text-gray-300" x-text="t('Anthropic Subscription Window')">Anthropic Subscription Window</div>
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full pulse-live"
                                       :class="stats.subscription_window.last_active_at ? 'bg-emerald-400' : 'bg-gray-600'"></span>
@@ -987,7 +1252,7 @@
                                              :style="'width: ' + Math.min(stats.subscription_window.latest.five_hour.utilization_pct || 0, 100) + '%'"></div>
                                     </div>
                                     <div class="text-xs text-gray-500 mt-1"
-                                         x-text="'Resets in ' + formatResetTime(stats.subscription_window.latest.five_hour.seconds_to_reset)"></div>
+                                         x-text="t('Resets in') + ' ' + formatResetTime(stats.subscription_window.latest.five_hour.seconds_to_reset)"></div>
                                 </div>
                             </template>
 
@@ -1006,7 +1271,7 @@
                                              :style="'width: ' + Math.min(stats.subscription_window.latest.seven_day.utilization_pct || 0, 100) + '%'"></div>
                                     </div>
                                     <div class="text-xs text-gray-500 mt-1"
-                                         x-text="'Resets in ' + formatResetTime(stats.subscription_window.latest.seven_day.seconds_to_reset)"></div>
+                                         x-text="t('Resets in') + ' ' + formatResetTime(stats.subscription_window.latest.seven_day.seconds_to_reset)"></div>
                                 </div>
                             </template>
                         </div>
@@ -1031,7 +1296,7 @@
                         <!-- Headroom contribution row -->
                         <template x-if="stats.subscription_window.contribution && stats.subscription_window.contribution.tokens_submitted > 0">
                             <div class="border-t border-border pt-3">
-                                <div class="text-xs text-gray-400 uppercase tracking-wide mb-2">Headroom Contribution This Window</div>
+                                <div class="text-xs text-gray-400 uppercase tracking-wide mb-2" x-text="t('Headroom Contribution This Window')">Headroom Contribution This Window</div>
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                                     <div>
                                         <div class="text-xs text-gray-500 mb-0.5">Efficiency</div>
@@ -1092,7 +1357,7 @@
                 <template x-if="stats.codex_rate_limits && stats.codex_rate_limits.primary">
                     <div class="bg-surface rounded-lg p-4 border border-border mb-6">
                         <div class="flex justify-between items-center mb-4">
-                            <div class="text-sm font-medium text-gray-300">OpenAI Codex Rate-Limit Window</div>
+                            <div class="text-sm font-medium text-gray-300" x-text="t('OpenAI Codex Rate-Limit Window')">OpenAI Codex Rate-Limit Window</div>
                             <template x-if="stats.codex_rate_limits.limit_name">
                                 <span class="text-xs text-gray-500 font-mono" x-text="stats.codex_rate_limits.limit_name"></span>
                             </template>
@@ -1120,7 +1385,7 @@
                                 </div>
                                 <template x-if="stats.codex_rate_limits.primary.seconds_until_reset !== null">
                                     <div class="text-xs text-gray-500 mt-1"
-                                         x-text="'Resets in ' + formatResetTime(stats.codex_rate_limits.primary.seconds_until_reset)"></div>
+                                         x-text="t('Resets in') + ' ' + formatResetTime(stats.codex_rate_limits.primary.seconds_until_reset)"></div>
                                 </template>
                             </div>
                             <!-- Secondary window -->
@@ -1144,7 +1409,7 @@
                                     </div>
                                     <template x-if="stats.codex_rate_limits.secondary.seconds_until_reset !== null">
                                         <div class="text-xs text-gray-500 mt-1"
-                                             x-text="'Resets in ' + formatResetTime(stats.codex_rate_limits.secondary.seconds_until_reset)"></div>
+                                             x-text="t('Resets in') + ' ' + formatResetTime(stats.codex_rate_limits.secondary.seconds_until_reset)"></div>
                                     </template>
                                 </div>
                             </template>
@@ -1177,10 +1442,10 @@
                 <template x-if="stats.copilot_quota && stats.copilot_quota.latest">
                     <div class="bg-surface rounded-lg p-4 border border-border mb-6">
                         <div class="flex justify-between items-center mb-4">
-                            <div class="text-sm font-medium text-gray-300">GitHub Copilot Quota</div>
+                            <div class="text-sm font-medium text-gray-300" x-text="t('GitHub Copilot Quota')">GitHub Copilot Quota</div>
                             <div class="flex items-center gap-2">
                                 <template x-if="stats.copilot_quota.latest.copilot_plan">
-                                    <span class="text-xs text-gray-500 font-mono capitalize" x-text="stats.copilot_quota.latest.copilot_plan + ' plan'"></span>
+                                    <span class="text-xs text-gray-500 font-mono capitalize" x-text="stats.copilot_quota.latest.copilot_plan + " + ' ' + t('plan') + ""></span>
                                 </template>
                                 <template x-if="stats.copilot_quota.latest.login">
                                     <span class="text-xs text-gray-400" x-text="'@' + stats.copilot_quota.latest.login"></span>
@@ -1275,8 +1540,8 @@
             <div>
                 <div class="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                     <div>
-                        <p class="text-xs text-gray-500" x-text="'Lifetime data since ' + (lifetimeStats.started_at || '—')"></p>
-                        <p class="text-xs text-gray-500" x-text="'Full metric coverage since ' + (lifetimeStats.full_fidelity_started_at || '—')"></p>
+                        <p class="text-xs text-gray-500" x-text="t('Lifetime data since') + ' ' + (lifetimeStats.started_at || '—')"></p>
+                        <p class="text-xs text-gray-500" x-text="t('Full metric coverage since') + ' ' + (lifetimeStats.full_fidelity_started_at || '—')"></p>
                     </div>
                     <div class="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-gray-500">
                         <span>Durable local savings history from <span class="font-mono">/stats-lifetime</span></span>
@@ -1293,18 +1558,18 @@
                 </div>
 
                 <div class="grid grid-cols-1 gap-4 mb-6 lg:grid-cols-3">
-                    <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300">Tokens</h3><dl class="space-y-2 text-sm"><div class="flex justify-between"><dt>Input</dt><dd x-text="formatNumber(lifetimeStats.tokens?.input || 0)"></dd></div><div class="flex justify-between"><dt>Output</dt><dd x-text="formatNumber(lifetimeStats.tokens?.output || 0)"></dd></div><div class="flex justify-between"><dt>Attempted Input</dt><dd x-text="formatNumber(lifetimeStats.tokens?.attempted_input || 0)"></dd></div><div class="flex justify-between"><dt>Saved</dt><dd class="text-emerald-400" x-text="formatNumber(lifetimeStats.tokens?.saved || 0)"></dd></div><div class="flex justify-between"><dt>Token Savings</dt><dd x-text="lifetimeStats.tokens?.token_savings_percent == null ? '—' : lifetimeStats.tokens.token_savings_percent.toFixed(1) + '%'"></dd></div></dl></section>
+                    <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300">Tokens</h3><dl class="space-y-2 text-sm"><div class="flex justify-between"><dt>Input</dt><dd x-text="formatNumber(lifetimeStats.tokens?.input || 0)"></dd></div><div class="flex justify-between"><dt>Output</dt><dd x-text="formatNumber(lifetimeStats.tokens?.output || 0)"></dd></div><div class="flex justify-between"><dt>Attempted Input</dt><dd x-text="formatNumber(lifetimeStats.tokens?.attempted_input || 0)"></dd></div><div class="flex justify-between"><dt x-text="t('Saved')">Saved</dt><dd class="text-emerald-400" x-text="formatNumber(lifetimeStats.tokens?.saved || 0)"></dd></div><div class="flex justify-between"><dt x-text="t('Token Savings')">Token Savings</dt><dd x-text="lifetimeStats.tokens?.token_savings_percent == null ? '—' : lifetimeStats.tokens.token_savings_percent.toFixed(1) + '%'"></dd></div></dl></section>
                     <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300">Cost</h3><dl class="space-y-2 text-sm"><div class="flex justify-between"><dt>Input cost</dt><dd x-text="'$' + formatCurrency(lifetimeStats.cost?.input_usd || 0)"></dd></div><div class="flex justify-between"><dt>Compression saved</dt><dd class="text-emerald-400" x-text="'$' + formatCurrency(lifetimeStats.cost?.compression_savings_usd || 0)"></dd></div><div class="flex justify-between"><dt>Prefix Cache saved</dt><dd class="text-cyan-400" x-text="'$' + formatCurrency(lifetimeStats.cost?.cache_savings_usd || 0)"></dd></div></dl></section>
                     <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300">Prefix Cache</h3><dl class="space-y-2 text-sm"><div class="flex justify-between"><dt>Hits / requests</dt><dd x-text="formatNumber(lifetimeStats.prefix_cache?.hit_requests || 0) + ' / ' + formatNumber(lifetimeStats.prefix_cache?.requests || 0)"></dd></div><div class="flex justify-between"><dt>Hit rate</dt><dd x-text="lifetimeStats.prefix_cache?.cache_hit_rate == null ? '—' : lifetimeStats.prefix_cache.cache_hit_rate.toFixed(1) + '%'"></dd></div><div class="flex justify-between"><dt>Read / write</dt><dd x-text="formatNumber(lifetimeStats.prefix_cache?.cache_read_tokens || 0) + ' / ' + formatNumber(lifetimeStats.prefix_cache?.cache_write_tokens || 0)"></dd></div><div class="flex justify-between"><dt>TTL 1h / 5m</dt><dd x-text="(lifetimeStats.prefix_cache?.ttl_1h_percent == null ? '—' : lifetimeStats.prefix_cache.ttl_1h_percent.toFixed(0) + '%') + ' / ' + (lifetimeStats.prefix_cache?.ttl_5m_percent == null ? '—' : lifetimeStats.prefix_cache.ttl_5m_percent.toFixed(0) + '%')"></dd></div><div class="flex justify-between"><dt>Cache bust</dt><dd x-text="formatNumber(lifetimeStats.prefix_cache?.bust_count || 0) + ' / ' + formatNumber(lifetimeStats.prefix_cache?.bust_tokens || 0)"></dd></div></dl></section>
                 </div>
 
                 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                    <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300">Cache Miss Attribution</h3><template x-for="[name, count] in Object.entries(lifetimeStats.prefix_cache?.misses_by_reason || {})" :key="name"><div class="flex justify-between text-sm"><span x-text="name"></span><span x-text="formatNumber(count)"></span></div></template></section>
-                    <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300">Waste Signals</h3><template x-for="[name, count] in Object.entries(lifetimeStats.waste_signals || {})" :key="name"><div class="flex justify-between text-sm"><span x-text="name"></span><span x-text="formatNumber(count)"></span></div></template></section>
+                    <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300" x-text="t('Cache Miss Attribution')">Cache Miss Attribution</h3><template x-for="[name, count] in Object.entries(lifetimeStats.prefix_cache?.misses_by_reason || {})" :key="name"><div class="flex justify-between text-sm"><span x-text="name"></span><span x-text="formatNumber(count)"></span></div></template></section>
+                    <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300" x-text="t('Waste Signals')">Waste Signals</h3><template x-for="[name, count] in Object.entries(lifetimeStats.waste_signals || {})" :key="name"><div class="flex justify-between text-sm"><span x-text="name"></span><span x-text="formatNumber(count)"></span></div></template></section>
                 </div>
 
                 <div class="grid grid-cols-1 gap-4 mt-4 lg:grid-cols-3">
-                    <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300">Providers</h3><template x-for="[name, count] in Object.entries(lifetimeStats.requests?.by_provider || {})" :key="name"><div class="flex justify-between text-sm"><span x-text="name"></span><span x-text="formatNumber(count)"></span></div></template></section>
+                    <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300" x-text="t('Providers')">Providers</h3><template x-for="[name, count] in Object.entries(lifetimeStats.requests?.by_provider || {})" :key="name"><div class="flex justify-between text-sm"><span x-text="name"></span><span x-text="formatNumber(count)"></span></div></template></section>
                     <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300">Stacks</h3><template x-for="[name, count] in Object.entries(lifetimeStats.requests?.by_stack || {})" :key="name"><div class="flex justify-between text-sm"><span x-text="name"></span><span x-text="formatNumber(count)"></span></div></template></section>
                     <section class="bg-surface rounded-lg p-4 border border-border"><h3 class="mb-3 text-sm text-gray-300">Top Models + Other</h3><template x-for="[name, metric] in Object.entries(lifetimeStats.by_model || {})" :key="name"><div class="flex justify-between text-sm"><span class="truncate pr-3" x-text="name"></span><span x-text="formatNumber(metric.input_tokens + metric.output_tokens)"></span></div></template></section>
                 </div>
@@ -1312,7 +1577,7 @@
                 <section class="bg-surface rounded-lg border border-border overflow-hidden mt-6">
                     <div class="px-4 py-3 border-b border-border flex justify-between items-center">
                         <div>
-                            <span class="text-sm font-medium text-gray-300">Per-Project Savings</span>
+                            <span class="text-sm font-medium text-gray-300" x-text="t('Per-Project Savings')">Per-Project Savings</span>
                             <div class="text-xs text-gray-500 mt-0.5">Lifetime totals — attributed requests only</div>
                         </div>
                         <span class="text-xs text-gray-500 font-mono"
@@ -1321,7 +1586,7 @@
 
                     <template x-if="Object.keys(lifetimeStats.projects || {}).length === 0">
                         <div class="px-4 py-8 text-center">
-                            <div class="text-xs text-gray-500 mb-3">No per-project data yet.</div>
+                            <div class="text-xs text-gray-500 mb-3" x-text="t('No per-project data yet.')">No per-project data yet.</div>
                             <div class="text-xs text-gray-600 font-mono leading-relaxed">
                                 Route project traffic through
                                 <span class="text-accent" x-text="window.location.origin + '/p/&lt;project-name&gt;'"></span>
@@ -1388,7 +1653,7 @@
             <div>
                 <div class="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <div class="text-sm font-medium text-gray-300">Historical Proxy Compression</div>
+                        <div class="text-sm font-medium text-gray-300" x-text="t('Historical Proxy Compression')">Historical Proxy Compression</div>
                         <div class="text-xs text-gray-500">
                             Durable local savings history from <span class="font-mono">/stats-history</span>
                         </div>
@@ -1473,7 +1738,7 @@
                     <div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
                             <div class="bg-surface rounded-lg p-4 border border-border">
-                                <div class="text-sm font-medium mb-4 text-gray-300">Daily Savings</div>
+                                <div class="text-sm font-medium mb-4 text-gray-300" x-text="t('Daily Savings')">Daily Savings</div>
                                 <template x-if="(historyStats.series?.daily || []).length > 0">
                                     <div class="space-y-3">
                                         <template x-for="point in recentDailyHistory" :key="point.timestamp">
@@ -1501,7 +1766,7 @@
                             </div>
 
                             <div class="bg-surface rounded-lg p-4 border border-border">
-                                <div class="text-sm font-medium mb-4 text-gray-300">Weekly Savings</div>
+                                <div class="text-sm font-medium mb-4 text-gray-300" x-text="t('Weekly Savings')">Weekly Savings</div>
                                 <template x-if="(historyStats.series?.weekly || []).length > 0">
                                     <div class="space-y-3">
                                         <template x-for="point in recentWeeklyHistory" :key="point.timestamp">
@@ -1529,7 +1794,7 @@
                             </div>
 
                             <div class="bg-surface rounded-lg p-4 border border-border">
-                                <div class="text-sm font-medium mb-4 text-gray-300">Monthly Savings</div>
+                                <div class="text-sm font-medium mb-4 text-gray-300" x-text="t('Monthly Savings')">Monthly Savings</div>
                                 <template x-if="(historyStats.series?.monthly || []).length > 0">
                                     <div class="space-y-3">
                                         <template x-for="point in recentMonthlyHistory" :key="point.timestamp">
@@ -1561,7 +1826,7 @@
                             <div class="bg-surface rounded-lg p-4 border border-border lg:col-span-2">
                                 <div class="flex flex-col gap-3 mb-4 lg:flex-row lg:items-center lg:justify-between">
                                     <div class="flex items-center gap-3">
-                                        <span class="text-sm font-medium text-gray-300">Historical Savings Trend</span>
+                                        <span class="text-sm font-medium text-gray-300" x-text="t('Historical Savings Trend')">Historical Savings Trend</span>
                                         <span class="text-xs text-gray-500 font-mono" x-text="historyTrendLabel"></span>
                                     </div>
                                     <div class="flex flex-wrap gap-2 self-start lg:self-auto">
@@ -1628,9 +1893,9 @@
                                                     ? 'text-gray-600 opacity-50'
                                                     : 'text-gray-400 hover:text-gray-200'"
                                                 @click="toggleHistoryModel(series.model)"
-                                                :title="historySelectedModel === series.model
+                                                ::title="t('historySelectedModel === series.model
                                                     ? 'Show all models'
-                                                    : 'Show only this model'">
+                                                    : 'Show only this model'')">
                                             <span class="inline-block w-2 h-2 rounded-full"
                                                   :style="'background:' + historyModelColor(index)"></span>
                                             <span :class="historySelectedModel === series.model ? 'underline' : ''"
@@ -1653,7 +1918,7 @@
 
                             <div class="bg-surface rounded-lg p-4 border border-border">
                                 <div class="flex items-center justify-between mb-4">
-                                    <span class="text-sm font-medium text-gray-300">Per-Model Breakdown</span>
+                                    <span class="text-sm font-medium text-gray-300" x-text="t('Per-Model Breakdown')">Per-Model Breakdown</span>
                                     <span class="text-xs text-gray-500 font-mono"
                                           x-text="historyModelSourceSeriesLabel + ' buckets'"></span>
                                 </div>
@@ -1671,7 +1936,7 @@
                                                     <th class="py-2 pr-4 font-medium text-right">Tokens saved</th>
                                                     <th class="py-2 pr-4 font-medium text-right">Cost with Headroom</th>
                                                     <th class="py-2 pr-4 font-medium text-right">Expected cost without Headroom</th>
-                                                    <th class="py-2 font-medium text-right">Saved</th>
+                                                    <th class="py-2 font-medium text-right" x-text="t('Saved')">Saved</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -1679,9 +1944,9 @@
                                                     <tr class="border-t border-border text-gray-300 cursor-pointer transition-colors"
                                                         :class="historySelectedModel === row.model ? 'bg-card-alt' : 'hover-bg-surface'"
                                                         @click="toggleHistoryModel(row.model)"
-                                                        :title="historySelectedModel === row.model
+                                                        ::title="t('historySelectedModel === row.model
                                                             ? 'Show all models'
-                                                            : 'Show only this model in the chart'">
+                                                            : 'Show only this model in the chart'')">
                                                         <td class="py-2 pr-4 font-mono text-xs"
                                                             :class="historySelectedModel === row.model ? 'underline' : ''"
                                                             x-text="truncateModel(row.model)"></td>
@@ -1698,7 +1963,7 @@
                             </div>
 
                             <div class="bg-surface rounded-lg p-4 border border-border">
-                                <div class="text-sm font-medium mb-4 text-gray-300">Historical Summary</div>
+                                <div class="text-sm font-medium mb-4 text-gray-300" x-text="t('Historical Summary')">Historical Summary</div>
                                 <div class="space-y-3">
                                     <div class="flex justify-between items-center">
                                         <span class="text-sm text-gray-400">Latest total</span>
@@ -1730,7 +1995,7 @@
                         </div>
 
                         <div class="bg-surface rounded-lg p-4 border border-border">
-                            <div class="text-sm font-medium mb-4 text-gray-300">Recent Historical Checkpoints</div>
+                            <div class="text-sm font-medium mb-4 text-gray-300" x-text="t('Recent Historical Checkpoints')">Recent Historical Checkpoints</div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <template x-for="point in recentHistoricalPoints" :key="point.timestamp">
                                     <div class="flex items-center justify-between rounded-lg border border-border px-3 py-3">
@@ -1753,7 +2018,7 @@
 
                 <template x-if="!hasHistoricalData">
                     <div class="bg-surface rounded-lg border border-border p-10 text-center">
-                        <div class="text-lg text-gray-300 mb-2">No persisted savings history yet</div>
+                        <div class="text-lg text-gray-300 mb-2" x-text="t('No persisted savings history yet')">No persisted savings history yet</div>
                         <div class="text-sm text-gray-500 max-w-2xl mx-auto">
                             Historical data is written locally after proxy requests save tokens. Keep using Headroom and this view will fill in automatically across restarts.
                         </div>
@@ -1779,7 +2044,7 @@
         <!-- Drawer Header -->
         <div class="flex items-center justify-between px-4 py-3 border-b border-border">
             <div class="flex items-center gap-3">
-                <span class="text-sm font-medium text-gray-200">Message Transformations</span>
+                <span class="text-sm font-medium text-gray-200" x-text="t('Message Transformations')">Message Transformations</span>
                 <span class="text-xs text-gray-500 font-mono" x-text="transformations.length + ' msgs'"></span>
             </div>
             <button @click="feedOpen = false" class="text-gray-500 hover:text-gray-200 transition-colors p-1">
@@ -1810,7 +2075,7 @@
                 Press <kbd class="px-1.5 py-0.5 bg-border rounded text-gray-400">R</kbd> to refresh
             </div>
             <div>
-                <a href="https://headroom-docs.vercel.app/docs" target="_blank" class="hover:text-gray-300 transition-colors">Documentation</a>
+                <a href="https://headroom-docs.vercel.app/docs" target="_blank" class="hover:text-gray-300 transition-colors" x-text="t('Documentation')">Documentation</a>
             </div>
         </div>
     </footer>
@@ -1825,6 +2090,13 @@
                 version: 'loading',
                 lastUpdate: 'never',
                 viewMode: 'session',
+                lang: localStorage.getItem('headroom-lang') || 'en',
+                t(key) { return t(key); },
+                setLang(l) {
+                    this.lang = l;
+                    localStorage.setItem('headroom-lang', l);
+                    document.documentElement.lang = l;
+                },
                 historyGranularity: 'daily',
                 historyChartMode: 'tokens',
                 historySelectedModel: null,
@@ -2044,21 +2316,21 @@
                                     <span class="text-xs text-gray-600 shrink-0">·</span>
                                     <span class="text-xs text-emerald-400 shrink-0">${tokensSaved} tok</span>
                                     <span class="text-xs text-gray-600 shrink-0">(${savingsPct}%)</span>
-                                    ${(t.tool_schema_saved_tokens || 0) > 0 ? `<span class="text-xs text-cyan-400 shrink-0" title="Tool-definition tokens deferred out of context">+${t.tool_schema_saved_tokens} tool-schema</span>` : ''}
+                                    ${(t.tool_schema_saved_tokens || 0) > 0 ? `<span class="text-xs text-cyan-400 shrink-0" :title="t('Tool-definition tokens deferred out of context')">+${t.tool_schema_saved_tokens} tool-schema</span>` : ''}
                                 </div>
                                 <span class="text-xs text-gray-600 shrink-0">${time}</span>
                             </div>
                             <div class="grid grid-cols-2 gap-2" style="height: 115px;">
                                 <div class="rounded border border-red-900/30 overflow-hidden flex flex-col">
                                     <div class="diff-before-header px-2 py-1 border-b border-red-900/30 shrink-0">
-                                        <span class="text-[10px] text-red-400 uppercase tracking-wide font-semibold">Before</span>
+                                        <span class="text-[10px] text-red-400 uppercase tracking-wide font-semibold" x-text="t('Before')">Before</span>
                                     </div>
                                     <div class="diff-before p-2 font-mono text-[11px] text-gray-300 overflow-auto flex-1"
                                          >${beforeContent}</div>
                                 </div>
                                 <div class="rounded border border-emerald-900/30 overflow-hidden flex flex-col">
                                     <div class="diff-after-header px-2 py-1 border-b border-emerald-900/30 shrink-0">
-                                        <span class="text-[10px] text-emerald-400 uppercase tracking-wide font-semibold">After</span>
+                                        <span class="text-[10px] text-emerald-400 uppercase tracking-wide font-semibold" x-text="t('After')">After</span>
                                     </div>
                                     <div class="diff-after p-2 font-mono text-[11px] text-gray-300 overflow-auto flex-1"
                                          >${afterContent}</div>

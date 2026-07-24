@@ -27,15 +27,58 @@
         input, select { background: var(--surface); border: 1px solid var(--border); }
         input:disabled, select:disabled { opacity: .55; cursor: not-allowed; }
     </style>
+<script>
+// --- I18N (shared subset for settings page) ---
+const I18N = {
+    zh: {
+        "Settings": "设置",
+        "Advanced": "高级",
+        "Dashboard": "控制台",
+        "Save": "保存",
+        "Apply & Restart": "应用并重启",
+        "Clear stored value": "清除已存储的值",
+        "Configure Headroom runtime knobs. Changes need a restart to apply.": "配置 Headroom 运行时参数。更改需要重启才能生效。",
+        "Run this on the host to apply:": "在宿主机上运行以应用:",
+        "Restart required to apply: ": "需要重启以应用: ",
+        "Saved — no changes to apply.": "已保存 — 无更改需要应用。",
+        "Fix the highlighted fields.": "请修正高亮字段。",
+        "Saving…": "保存中…",
+        "Saved.": "已保存。",
+        "Applying…": "应用中…",
+        "Restarting…": "重启中…",
+        "Waiting for the proxy to come back…": "等待代理恢复…",
+        "Applied — proxy restarted.": "已应用 — 代理已重启。",
+        "Timed out waiting for the proxy. Check the proxy logs.": "等待代理超时。请检查代理日志。",
+        "Save failed: ": "保存失败: ",
+        "Apply failed: ": "应用失败: ",
+        "Failed to load settings: ": "加载设置失败: ",
+        "Managed by the install manifest — change via": "由安装清单管理 — 通过以下方式更改",
+        "Overridden by environment variable": "被环境变量覆盖",
+        "edits here have no effect until it's unset.": "此处的编辑在取消设置前无效。",
+    }
+};
+function t(key) {
+    const lang = localStorage.getItem('headroom-lang') || 'en';
+    if (lang === 'en' || !key) return key;
+    return (I18N[lang] || {})[key] || key;
+}
+</script>
 </head>
 <body class="text-gray-800 dark:text-gray-100 min-h-screen" x-data="settingsPage()" x-init="init()">
     <div class="max-w-3xl mx-auto px-4 py-8">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h1 class="text-2xl font-semibold">Settings</h1>
-                <p class="text-sm field-help">Configure Headroom runtime knobs. Changes need a restart to apply.</p>
+                <h1 class="text-2xl font-semibold" x-text="t('Settings')">Settings</h1>
+                <p class="text-sm field-help" x-text="t('Configure Headroom runtime knobs. Changes need a restart to apply.')">Configure Headroom runtime knobs. Changes need a restart to apply.</p>
             </div>
-            <a href="/dashboard" class="text-sm text-accent hover:underline">&larr; Dashboard</a>
+            <div class="flex items-center gap-3">
+                <select @change="setLang($event.target.value)" x-model="lang"
+                        class="text-xs rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 px-2 py-1.5 focus:outline-none">
+                    <option value="en">EN</option>
+                    <option value="zh">中文</option>
+                </select>
+                <a href="/dashboard" class="text-sm text-accent hover:underline">&larr; <span x-text="t('Dashboard')">Dashboard</span></a>
+            </div>
         </div>
 
         <!-- Status / error surface -->
@@ -51,7 +94,7 @@
                 <p class="text-amber-500 text-sm font-medium" x-text="banner"></p>
                 <template x-if="applyMode === 'docker' && applyCommand">
                     <div class="mt-2">
-                        <p class="text-xs field-help mb-1">Run this on the host to apply:</p>
+                        <p class="text-xs field-help mb-1" x-text="t('Run this on the host to apply:')">Run this on the host to apply:</p>
                         <code class="block text-xs bg-black/40 rounded px-3 py-2 select-all" x-text="applyCommand"></code>
                     </div>
                 </template>
@@ -63,11 +106,11 @@
             <button type="button" role="tab" @click="activeTab = 'basic'"
                     :aria-selected="activeTab === 'basic'"
                     :class="activeTab === 'basic' ? 'bg-accent text-black' : 'card field-help'"
-                    class="px-3 py-1.5 rounded text-sm font-medium">Settings</button>
+                    class="px-3 py-1.5 rounded text-sm font-medium" x-text="t('Settings')">Settings</button>
             <button type="button" role="tab" @click="activeTab = 'advanced'"
                     :aria-selected="activeTab === 'advanced'"
                     :class="activeTab === 'advanced' ? 'bg-accent text-black' : 'card field-help'"
-                    class="px-3 py-1.5 rounded text-sm font-medium">Advanced</button>
+                    class="px-3 py-1.5 rounded text-sm font-medium" x-text="t('Advanced')">Advanced</button>
         </div>
         <!-- Grouped fields -->
         <template x-if="loaded">
@@ -114,7 +157,7 @@
                                 </label>
                                 <template x-if="field.secret && !isLocked(field)">
                                     <button type="button" @click="values[field.key] = ''; clearedKeys[field.key] = true"
-                                            class="text-xs text-red-500/80 hover:underline mt-1">
+                                            class="text-xs text-red-500/80 hover:underline mt-1" x-text="t('Clear stored value')">
                                         Clear stored value
                                     </button>
                                 </template>
@@ -140,12 +183,12 @@
                 <div class="flex items-center gap-3 mt-6">
                     <button type="button" @click="save()"
                             :disabled="busy"
-                            class="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm disabled:opacity-50">
+                            class="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm disabled:opacity-50" x-text="t('Save')">
                         Save
                     </button>
                     <button type="button" @click="applyAndRestart()"
                             :disabled="busy"
-                            class="px-4 py-2 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-medium text-sm disabled:opacity-50">
+                            class="px-4 py-2 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-medium text-sm disabled:opacity-50" x-text="t('Apply & Restart')">
                         Apply &amp; Restart
                     </button>
                     <span class="text-sm field-help" x-text="status"></span>
@@ -163,15 +206,18 @@
                 groups: [],
                 values: {},
                 storedValues: {},
-                manifestManaged: false,  // true on supervised installs (locks manifest fields)
+                manifestManaged: false,
                 fieldErrors: {},
                 banner: '',
                 status: '',
                 busy: false,
                 applyMode: '',
                 applyCommand: '',
-                activeTab: 'basic',  // 'basic' (Settings tab) | 'advanced'
-                clearedKeys: {},  // secret fields explicitly cleared this session (send null on save)
+                activeTab: 'basic',
+                clearedKeys: {},
+                lang: localStorage.getItem('headroom-lang') || 'en',
+                t(key) { return t(key); },
+                setLang(l) { this.lang = l; localStorage.setItem('headroom-lang', l); },
 
                 async init() {
                     try {
@@ -180,18 +226,14 @@
                         const schema = await res.json();
                         this.fields = schema.fields || [];
                         this.groups = schema.groups || [];
-                        // Seed the editable model from the effective values.
                         for (const f of this.fields) {
                             this.values[f.key] = schema.values ? schema.values[f.key] : f.value;
                             this.storedValues[f.key] = f.stored;
                         }
-                        // The server tells us whether this is a supervised install
-                        // (docker/service); there manifest-managed knobs are baked
-                        // into the install manifest and cannot be changed via the GUI.
                         this.manifestManaged = !!schema.supervised;
                         this.loaded = true;
                     } catch (e) {
-                        this.loadError = 'Failed to load settings: ' + e.message;
+                        this.loadError = t('Failed to load settings: ') + e.message;
                     }
                 },
 
@@ -228,7 +270,7 @@
                 },
 
                 async save() {
-                    this.busy = true; this.status = 'Saving…'; this.fieldErrors = {};
+                    this.busy = true; this.status = t('Saving…'); this.fieldErrors = {};
                     try {
                         const res = await fetch('/settings', {
                             method: 'POST',
@@ -237,26 +279,26 @@
                         });
                         const data = await res.json();
                         if (res.status === 200) {
-                            this.status = 'Saved.';
+                            this.status = t('Saved.');
                             const changed = data.changed_keys || [];
-                            this.banner = changed.length ? ('Restart required to apply: ' + changed.join(', ')) : 'Saved — no changes to apply.';
+                            this.banner = changed.length ? (t('Restart required to apply: ') + changed.join(', ')) : t('Saved — no changes to apply.');
                             this.applyMode = ''; this.applyCommand = '';
                             this.clearedKeys = {};
                         } else if (res.status === 422) {
                             this.fieldErrors = data.field_errors || {};
-                            this.status = 'Fix the highlighted fields.';
+                            this.status = t('Fix the highlighted fields.');
                         } else {
                             this.status = data.error || ('Error ' + res.status);
                         }
                     } catch (e) {
-                        this.status = 'Save failed: ' + e.message;
+                        this.status = t('Save failed: ') + e.message;
                     } finally {
                         this.busy = false;
                     }
                 },
 
                 async applyAndRestart() {
-                    this.busy = true; this.status = 'Applying…'; this.fieldErrors = {};
+                    this.busy = true; this.status = t('Applying…'); this.fieldErrors = {};
                     try {
                         const res = await fetch('/settings/apply', {
                             method: 'POST',
@@ -266,15 +308,15 @@
                         const data = await res.json();
                         if (res.status === 422) {
                             this.fieldErrors = data.field_errors || {};
-                            this.status = 'Fix the highlighted fields.'; return;
+                            this.status = t('Fix the highlighted fields.'); return;
                         }
                         if (res.status === 400) {
                             this.status = data.error || 'Bad request'; return;
                         }
                         this.applyMode = data.mode || '';
                         if (data.restarted && data.mode === 'service') {
-                            this.banner = 'Restarting…';
-                            this.status = 'Waiting for the proxy to come back…';
+                            this.banner = t('Restarting…');
+                            this.status = t('Waiting for the proxy to come back…');
                             await this.pollHealth();
                         } else if (data.mode === 'docker') {
                             this.applyCommand = data.command || '';
@@ -285,27 +327,26 @@
                             this.status = '';
                         }
                     } catch (e) {
-                        this.status = 'Apply failed: ' + e.message;
+                        this.status = t('Apply failed: ') + e.message;
                     } finally {
                         this.busy = false;
                     }
                 },
 
                 async pollHealth() {
-                    // /health is the single source of truth that the proxy is back.
-                    const deadline = 40;  // ~60s at 1.5s intervals
+                    const deadline = 40;
                     for (let i = 0; i < deadline; i++) {
                         await new Promise(r => setTimeout(r, 1500));
                         try {
                             const res = await fetch('/health', { cache: 'no-store' });
                             if (res.ok) {
                                 this.banner = '';
-                                this.status = 'Applied — proxy restarted.';
+                                this.status = t('Applied — proxy restarted.');
                                 return;
                             }
                         } catch (e) { /* proxy still down: keep polling */ }
                     }
-                    this.status = 'Timed out waiting for the proxy. Check the proxy logs.';
+                    this.status = t('Timed out waiting for the proxy. Check the proxy logs.');
                 },
             };
         }
