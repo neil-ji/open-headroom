@@ -1,7 +1,17 @@
 ARG PYTHON_VERSION=3.13
 ARG UV_VERSION=0.11.18
+ARG NODE_VERSION=22
 ARG DISTROLESS_IMAGE=gcr.io/distroless/python3-debian13
 ARG PYTHON_SITE_PACKAGES=/usr/local/lib/python${PYTHON_VERSION}/site-packages
+
+# ---- Web UI build stage: compile React dashboard ----
+FROM node:${NODE_VERSION}-slim AS web-builder
+
+WORKDIR /web
+COPY headroom/dashboard/web/package.json headroom/dashboard/web/package-lock.json ./
+RUN npm ci
+COPY headroom/dashboard/web/ ./
+RUN npm run build
 
 # ---- Build stage: compile native extensions, build wheel ----
 FROM python:${PYTHON_VERSION}-slim AS builder
@@ -172,6 +182,8 @@ COPY --from=builder ${PYTHON_SITE_PACKAGES} ${PYTHON_SITE_PACKAGES}
 COPY --from=builder /usr/local/bin/headroom /usr/local/bin/headroom
 # Native Rust reverse proxy binary (issue #976).
 COPY --from=builder /usr/local/bin/headroom-proxy /usr/local/bin/headroom-proxy
+	# Pre-built React dashboard UI.
+	COPY --from=web-builder /web/dist ${PYTHON_SITE_PACKAGES}/headroom/dashboard/web/dist
 
 RUN mkdir -p /home/nonroot /data && \
     if [ "$RUNTIME_USER" = "nonroot" ]; then \
@@ -213,6 +225,8 @@ ARG PYTHON_SITE_PACKAGES
 COPY --from=builder ${PYTHON_SITE_PACKAGES} ${PYTHON_SITE_PACKAGES}
 # Native Rust reverse proxy binary (issue #976).
 COPY --from=builder /usr/local/bin/headroom-proxy /usr/local/bin/headroom-proxy
+	# Pre-built React dashboard UI.
+	COPY --from=web-builder /web/dist ${PYTHON_SITE_PACKAGES}/headroom/dashboard/web/dist
 
 USER ${RUNTIME_USER}
 WORKDIR /app
