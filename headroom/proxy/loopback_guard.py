@@ -199,8 +199,19 @@ def require_loopback(request: Request) -> None:  # type: ignore[valid-type]
     client = getattr(request, "client", None)
     host = getattr(client, "host", None) if client is not None else None
     if not is_loopback_host(host):
-        # No body: minimal FastAPI default, behaves like "no route".
-        raise HTTPException(status_code=404)
+        # Containerized deployments: when Headroom runs in a bridge-network
+        # container, a browser on the host reaches it via the container's
+        # gateway, so ``request.client.host`` is the gateway IP, not
+        # 127.0.0.1.  Treat a peer inside an operator-configured
+        # trusted-gateway CIDR as loopback-equivalent.  Opt-in via
+        # HEADROOM_PROXY_TRUSTED_GATEWAY_CIDRS; empty by default, so this
+        # is a no-op unless the operator explicitly allow-lists their
+        # container gateway.
+        from headroom.proxy.forwarded_headers import load_trusted_gateway_cidrs
+        from headroom.proxy.forwarded_policy import peer_is_trusted_gateway
+
+        if not peer_is_trusted_gateway(host, load_trusted_gateway_cidrs()):
+            raise HTTPException(status_code=404)
 
     headers = getattr(request, "headers", None)
     if headers is None:
