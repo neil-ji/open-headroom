@@ -57,9 +57,8 @@ services:
       # the host browser through Caddy.  172.16.0.0/12 covers all
       # standard Docker bridge networks.
       - HEADROOM_PROXY_TRUSTED_GATEWAY_CIDRS=172.16.0.0/12
-      # if you want to use a custom OpenAI-compatible API endpoint,
-      # uncomment and set the following line with the desired URL
-      # - OPENAI_TARGET_API_URL=https://api.x.ai
+      # Route Anthropic-format requests to DeepSeek (or any compatible API).
+      - ANTHROPIC_TARGET_API_URL=https://api.deepseek.com/anthropic
     ports:
       - "8788:8787"   # Internal — Caddy routes here via hostname
     volumes:
