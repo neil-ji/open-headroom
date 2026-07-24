@@ -2375,6 +2375,29 @@ class AnthropicHandlerMixin:
                         f"{_ts_saved_tokens}tok"
                     )
 
+            # Strip Anthropic-specific server-side tool_search tools when
+            # routing to a third-party API (e.g. DeepSeek). Claude Code may
+            # send these tools when it believes it is talking to Anthropic,
+            # but non-Anthropic APIs reject unknown server-tool variants.
+            if self.config.anthropic_api_url and tools:
+                _stripped = [
+                    t
+                    for t in tools
+                    if not (
+                        isinstance(t, dict)
+                        and str(t.get("type", "")).startswith("tool_search_tool_")
+                    )
+                ]
+                if len(_stripped) != len(tools):
+                    body["tools"] = _stripped
+                    tools = _stripped
+                    logger.info(
+                        "[%s] stripped %d Anthropic server-side tool_search "
+                        "tool(s) for third-party upstream",
+                        request_id,
+                        len(tools) - len(_stripped),
+                    )
+
             # Turn hooks (opt-in extensions): a registered hook may inspect or
             # rewrite the outbound tools/messages before we send upstream — the
             # extensible counterpart to the built-in deferral above. A single
