@@ -58,8 +58,8 @@ echo "[Phase 2/8] Build complete."
 # ---------------------------------------------------------------------------
 echo ""
 echo "[Phase 3/8] Starting headroom-${INACTIVE_COLOR}..."
-docker compose up -d "headroom-${INACTIVE_COLOR}"
-echo "[Phase 3/8] Container started."
+docker compose up -d --force-recreate "headroom-${INACTIVE_COLOR}"
+echo "[Phase 3/8] Container created from fresh image."
 
 # ---------------------------------------------------------------------------
 # Phase 4: Wait for /readyz on the new instance
