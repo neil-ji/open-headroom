@@ -3317,6 +3317,19 @@ def create_app(config: ProxyConfig | None = None) -> FastAPI:
         """Serve the Headroom dashboard UI."""
         return get_dashboard_html()
 
+    # Serve React SPA static assets (JS, CSS) from the build output
+    from headroom.dashboard import DASHBOARD_DIR
+
+    _web_assets = DASHBOARD_DIR / "web" / "dist" / "assets"
+    if _web_assets.exists():
+        from fastapi.staticfiles import StaticFiles
+
+        app.mount(
+            "/dashboard/assets",
+            StaticFiles(directory=str(_web_assets), check_dir=False),
+            name="dashboard_assets",
+        )
+
     # --- Dashboard settings API (loopback-gated, registry-validated) ---------
     # Read/write the curated HEADROOM_* knobs the settings GUI manages. Writes
     # reuse the same loopback guard as the /admin and /debug endpoints and only

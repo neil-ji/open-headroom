@@ -268,3 +268,5 @@ uv.lock
 .tokensave
 
 .codebase-memory/
+dashboard/web/node_modules/
+dashboard/web/dist/
