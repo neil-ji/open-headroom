@@ -54,23 +54,23 @@ function TransformationCard({ t }: { t: Transformation }) {
 
       {/* Before / After */}
       <div className="grid grid-cols-2 gap-2" style={{ height: 115 }}>
-        <div className="rounded border flex flex-col overflow-hidden" style={{ borderColor: "rgba(196,78,78,0.25)" }}>
-          <div className="px-2 py-1 border-b shrink-0" style={{ borderColor: "rgba(196,78,78,0.25)", background: "var(--diff-before-header, #1A0A0A)" }}>
-            <span className="text-[10px] uppercase tracking-wide font-semibold" style={{ color: "var(--color-negative)" }}>Before</span>
+        <div className="rounded border flex flex-col overflow-hidden" style={{ borderColor: "var(--diff-before-border)" }}>
+          <div className="px-2 py-1 border-b shrink-0" style={{ borderColor: "var(--diff-before-border)", background: "var(--diff-before-header)" }}>
+            <span className="text-xs uppercase tracking-wide font-semibold" style={{ color: "var(--color-negative)" }}>Before</span>
           </div>
           <div
-            className="p-2 font-mono text-[11px] overflow-auto flex-1"
-            style={{ background: "var(--diff-before-body, #140808)", color: "var(--color-text-secondary)" }}
+            className="p-2 font-mono text-xs overflow-auto flex-1"
+            style={{ background: "var(--diff-before-body)", color: "var(--color-text-secondary)" }}
             dangerouslySetInnerHTML={{ __html: hasContent ? escHtml(before) : empty }}
           />
         </div>
-        <div className="rounded border flex flex-col overflow-hidden" style={{ borderColor: "rgba(61,139,126,0.25)" }}>
-          <div className="px-2 py-1 border-b shrink-0" style={{ borderColor: "rgba(61,139,126,0.25)", background: "var(--diff-after-header, #0A1A14)" }}>
-            <span className="text-[10px] uppercase tracking-wide font-semibold" style={{ color: "var(--color-positive)" }}>After</span>
+        <div className="rounded border flex flex-col overflow-hidden" style={{ borderColor: "var(--diff-after-border)" }}>
+          <div className="px-2 py-1 border-b shrink-0" style={{ borderColor: "var(--diff-after-border)", background: "var(--diff-after-header)" }}>
+            <span className="text-xs uppercase tracking-wide font-semibold" style={{ color: "var(--color-positive)" }}>After</span>
           </div>
           <div
-            className="p-2 font-mono text-[11px] overflow-auto flex-1"
-            style={{ background: "var(--diff-after-body, #081410)", color: "var(--color-text-secondary)" }}
+            className="p-2 font-mono text-xs overflow-auto flex-1"
+            style={{ background: "var(--diff-after-body)", color: "var(--color-text-secondary)" }}
             dangerouslySetInnerHTML={{ __html: hasContent ? escHtml(after) : empty }}
           />
         </div>
@@ -86,7 +86,7 @@ export function LiveFeedDrawer({ open, onClose, transformations }: LiveFeedDrawe
 
   return (
     <div
-      className="fixed top-0 right-0 h-full w-[520px] z-50 flex flex-col shadow-2xl"
+      className="fixed top-0 right-0 h-full w-[min(520px,100vw)] z-50 flex flex-col shadow-2xl"
       style={{
         background: "var(--color-surface)",
         borderLeft: "1px solid var(--color-border)",
@@ -110,8 +110,9 @@ export function LiveFeedDrawer({ open, onClose, transformations }: LiveFeedDrawe
         </div>
         <button
           onClick={onClose}
-          className="p-1 rounded transition-colors"
+          className="p-2.5 rounded transition-colors"
           style={{ color: "var(--color-text-muted)" }}
+          aria-label="Close feed"
         >
           <X className="w-5 h-5" />
         </button>

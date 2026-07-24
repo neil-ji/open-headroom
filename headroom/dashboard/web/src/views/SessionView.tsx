@@ -4,6 +4,7 @@ import { Card, CardInner } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LoadingBlock, ErrorBlock } from "@/components/ui/StatusBlock";
 import { Sparkline, TrendSparkline } from "@/components/charts/Sparkline";
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";
@@ -22,14 +23,14 @@ const WASTE_LABELS: Record<string, string> = {
   reread_compressed: "Re-read After Compression",
 };
 const WASTE_COLORS: Record<string, string> = {
-  json_bloat: "var(--color-warning)",
-  html_noise: "#f97316",
-  base64: "var(--color-negative)",
-  whitespace: "#3b82f6",
-  dynamic_date: "#a78bfa",
-  repetition: "#ec4899",
-  reread: "#14b8a6",
-  reread_compressed: "#f43f5e",
+  json_bloat: "var(--color-waste-json)",
+  html_noise: "var(--color-waste-html)",
+  base64: "var(--color-waste-base64)",
+  whitespace: "var(--color-waste-whitespace)",
+  dynamic_date: "var(--color-waste-date)",
+  repetition: "var(--color-waste-repetition)",
+  reread: "var(--color-waste-reread)",
+  reread_compressed: "var(--color-waste-reread-compressed)",
 };
 
 function wasteLabel(s: string) {
@@ -38,15 +39,15 @@ function wasteLabel(s: string) {
 
 // ── Agent dot colors ──
 const AGENT_COLORS: Record<string, string> = {
-  "claude-code": "#f97316",
-  claude: "#f97316",
-  codex: "#10b981",
-  cursor: "#06b6d4",
-  copilot: "#8b5cf6",
-  openai: "#0ea5e9",
-  anthropic: "#f97316",
-  gemini: "#f43f5e",
-  aider: "#f59e0b",
+  "claude-code": "var(--color-agent-claude)",
+  claude: "var(--color-agent-claude)",
+  codex: "var(--color-agent-codex)",
+  cursor: "var(--color-agent-cursor)",
+  copilot: "var(--color-agent-copilot)",
+  openai: "var(--color-agent-openai)",
+  anthropic: "var(--color-agent-claude)",
+  gemini: "var(--color-agent-gemini)",
+  aider: "var(--color-agent-aider)",
 };
 
 interface SessionViewProps {
@@ -60,11 +61,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   if (!stats) {
-    return (
-      <div className="flex items-center justify-center h-64" style={{ color: "var(--color-text-muted)" }}>
-        Loading...
-      </div>
-    );
+    return <LoadingBlock message="Loading session stats…" />;
   }
 
   // Cache active check
@@ -268,7 +265,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
               [
                 "Forward (p50 / p95)",
                 `${(stats.throughput?.rolling?.forward_p50 || 0).toFixed(1)} / ${(stats.throughput?.rolling?.forward_p95 || 0).toFixed(1)}`,
-                "#06b6d4",
+                "var(--color-throughput-forward)",
               ],
             ].map(([label, value, color]) => (
               <div key={label} className="flex justify-between border-b border-[var(--color-border)] pb-0.5">
@@ -327,9 +324,9 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
                       style={{
                         color:
                           t.average_ms > 100
-                            ? "var(--color-warning)"
+                            ? "var(--color-pipeline-slow)"
                             : t.average_ms > 50
-                              ? "#eab308"
+                              ? "var(--color-pipeline-medium)"
                               : "var(--color-text-secondary)",
                       }}
                     >
@@ -550,8 +547,10 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
                       <div className="flex items-center gap-2">
                         <span
                           className="h-2.5 w-2.5 rounded-full inline-block"
+                          role="img"
+                          aria-label={agent.label}
                           style={{
-                            background: AGENT_COLORS[agent.agent] || "#9ca3af",
+                            background: AGENT_COLORS[agent.agent] || "var(--color-agent-default)",
                           }}
                         />
                         <span className="text-sm font-medium truncate" style={{ color: "var(--color-text)" }}>
@@ -626,9 +625,11 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
             last 25 — click row to expand
           </span>
         </div>
+        {/* Scroll wrapper for mobile */}
+        <div className="overflow-x-auto">
         {/* Table header */}
         <div
-          className="grid text-xs font-medium uppercase tracking-wide px-4 py-3"
+          className="grid text-xs font-medium uppercase tracking-wide px-4 py-3 min-w-[640px]"
           style={{
             gridTemplateColumns: "2rem 12fr 22fr 15fr 12fr 10fr 14fr",
             color: "var(--color-text-muted)",
@@ -651,7 +652,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
           (stats.recent_requests || []).map((req) => (
             <div key={req.request_id} style={{ borderBottom: "1px solid var(--color-border)" }}>
               <div
-                className="grid cursor-pointer hover:bg-[var(--color-surface-alt)] px-4 py-3 text-sm"
+                className="grid cursor-pointer hover:bg-[var(--color-surface-alt)] px-4 py-3 text-sm min-w-[640px]"
                 style={{ gridTemplateColumns: "2rem 12fr 22fr 15fr 12fr 10fr 14fr" }}
                 onClick={() =>
                   setExpanded((prev) => ({
@@ -660,7 +661,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
                   }))
                 }
               >
-                <div style={{ color: "var(--color-text-muted)" }}>
+                <div style={{ color: "var(--color-text-muted)" }} aria-label={expanded[req.request_id] ? "Collapse" : "Expand"}>
                   {expanded[req.request_id] ? "−" : "+"}
                 </div>
                 <div className="font-mono truncate" style={{ color: "var(--color-text-secondary)" }}>
@@ -745,6 +746,7 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
             </div>
           ))
         )}
+        </div>{/* /overflow-x-auto */}
       </Card>
     </div>
   );

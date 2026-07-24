@@ -74,7 +74,7 @@ export function Header({
                 key={to}
                 to={to}
                 className={({ isActive }) =>
-                  `px-3 py-1.5 text-sm rounded-md transition-colors font-medium ${
+                  `px-3 py-2.5 text-sm rounded-md transition-colors font-medium ${
                     isActive
                       ? "text-white"
                       : ""
@@ -95,6 +95,8 @@ export function Header({
           <div className="flex items-center gap-2">
             <span
               className="w-2 h-2 rounded-full pulse-live"
+              role="img"
+              aria-label={healthy ? _t("Healthy") : _t("Error")}
               style={{
                 background: healthy
                   ? "var(--color-positive)"
@@ -110,7 +112,8 @@ export function Header({
           <select
             value={lang}
             onChange={(e) => setLang(e.target.value as "en" | "zh")}
-            className="text-xs rounded-md px-2 py-1.5 focus:outline-none"
+            className="text-xs rounded-md px-2 py-2.5 focus:outline-none"
+            aria-label={_t("Language")}
             style={{
               color: "var(--color-text-secondary)",
               background: "var(--color-surface)",
@@ -124,29 +127,29 @@ export function Header({
           {/* Settings */}
           <NavLink
             to="/dashboard/settings"
-            className="p-2 rounded-md transition-colors"
+            className="p-2.5 rounded-md transition-colors"
             style={{ color: "var(--color-text-secondary)" }}
-            title={_t("Settings")}
+            aria-label={_t("Settings")}
           >
-            <SettingsIcon className="w-4 h-4" />
+            <SettingsIcon className="w-5 h-5" />
           </NavLink>
 
           {/* Theme toggle */}
           <button
             onClick={onToggleTheme}
-            className="p-2 rounded-md transition-colors"
+            className="p-2.5 rounded-md transition-colors"
             style={{ color: "var(--color-text-secondary)" }}
-            title={_t("Toggle light/dark mode")}
+            aria-label={_t("Toggle light/dark mode")}
           >
-            <Sun className="w-4 h-4 dark:hidden" />
-            <Moon className="w-4 h-4 hidden dark:block" />
+            <Sun className="w-5 h-5 dark:hidden" />
+            <Moon className="w-5 h-5 hidden dark:block" />
           </button>
 
           {/* Live Feed */}
           {logFullMessages && (
             <button
               onClick={onToggleFeed}
-              className="px-3 py-1.5 text-sm rounded-md transition-all font-medium"
+              className="px-3 py-2.5 text-sm rounded-md transition-all font-medium"
               style={
                 feedOpen
                   ? { background: "var(--color-accent)", color: "#fff" }

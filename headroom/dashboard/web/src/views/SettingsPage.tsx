@@ -308,7 +308,7 @@ export function SettingsPage() {
                         />
                       ) : field.type === "enum" ? (
                         <select
-                          className="rounded px-2 py-1 text-sm w-56"
+                          className="rounded px-2 py-1 text-sm w-full sm:w-56"
                           style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-text)" }}
                           disabled={isLocked(field)}
                           value={String(values[field.key] || "")}
@@ -321,7 +321,7 @@ export function SettingsPage() {
                       ) : field.type === "int" || field.type === "float" ? (
                         <input
                           type="number"
-                          className="rounded px-2 py-1 text-sm w-56"
+                          className="rounded px-2 py-1 text-sm w-full sm:w-56"
                           style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-text)" }}
                           step={field.type === "float" ? "any" : "1"}
                           min={field.minimum}
@@ -333,7 +333,7 @@ export function SettingsPage() {
                       ) : (
                         <input
                           type={field.secret ? "password" : "text"}
-                          className="rounded px-2 py-1 text-sm w-56"
+                          className="rounded px-2 py-1 text-sm w-full sm:w-56"
                           style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-text)" }}
                           disabled={isLocked(field)}
                           value={String(values[field.key] || "")}

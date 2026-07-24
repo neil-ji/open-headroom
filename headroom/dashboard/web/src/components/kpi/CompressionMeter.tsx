@@ -15,6 +15,8 @@ export function CompressionMeter({ percentage, isActive }: CompressionMeterProps
         height="56"
         viewBox="0 0 56 56"
         style={{ transform: "rotate(-90deg)" }}
+        role="img"
+        aria-label={`Compression rate: ${pct.toFixed(0)}%`}
       >
         <defs>
           <linearGradient id="meterGradient" x1="0%" y1="0%" x2="100%" y2="0%">

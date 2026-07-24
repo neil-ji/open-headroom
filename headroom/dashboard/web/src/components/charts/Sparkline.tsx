@@ -29,6 +29,8 @@ export function Sparkline({ data, height = 32, className }: SparklineProps) {
       viewBox={`0 0 ${w} ${height}`}
       preserveAspectRatio="none"
       style={{ width: "100%", height }}
+      role="img"
+      aria-label={`Sparkline: ${data.length} data points, range ${min} to ${max}`}
     >
       <defs>
         <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -73,6 +75,8 @@ export function TrendSparkline({ data, height = 64, valueKey }: {
       viewBox={`0 0 ${w} ${height}`}
       preserveAspectRatio="none"
       style={{ width: "100%", height }}
+      role="img"
+      aria-label={`Trend chart: ${data.length} data points for ${valueKey}`}
     >
       <defs>
         <linearGradient id="trendGrad" x1="0%" y1="0%" x2="0%" y2="100%">

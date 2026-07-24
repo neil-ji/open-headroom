@@ -5,6 +5,7 @@ import { useHistoryStats } from "@/hooks/useHistoryStats";
 import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LoadingBlock, ErrorBlock } from "@/components/ui/StatusBlock";
 import { TrendSparkline } from "@/components/charts/Sparkline";
 import { fmtNum, fmtCurrency, fmtDate, truncateModel } from "@/lib/format";
 
@@ -15,13 +16,10 @@ export function HistoryView() {
   const _t = (k: string) => t(k, lang);
   const { data: hs } = useHistoryStats(true);
   const [granularity, setGranularity] = useState<Granularity>("daily");
+  const [exporting, setExporting] = useState<string | null>(null);
 
   if (!hs) {
-    return (
-      <div className="flex items-center justify-center h-64" style={{ color: "var(--color-text-muted)" }}>
-        Loading history...
-      </div>
-    );
+    return <LoadingBlock message="Loading history…" />;
   }
 
   const hasData = (hs.history || []).length > 0;
@@ -41,38 +39,34 @@ export function HistoryView() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button
-            className="px-3 py-1.5 text-sm rounded-md border transition-colors"
-            style={{ color: "var(--color-text-secondary)", borderColor: "var(--color-border)", background: "var(--color-surface)" }}
-            onClick={async () => {
-              const res = await fetch("/stats-history?format=json&series=" + granularity);
-              const blob = await res.blob();
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = `headroom-stats-history-${granularity}.json`;
-              a.click();
-              URL.revokeObjectURL(url);
-            }}
-          >
-            {_t("Export JSON")}
-          </button>
-          <button
-            className="px-3 py-1.5 text-sm rounded-md border transition-colors"
-            style={{ color: "var(--color-text-secondary)", borderColor: "var(--color-border)", background: "var(--color-surface)" }}
-            onClick={async () => {
-              const res = await fetch("/stats-history?format=csv&series=" + granularity);
-              const blob = await res.blob();
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = `headroom-stats-history-${granularity}.csv`;
-              a.click();
-              URL.revokeObjectURL(url);
-            }}
-          >
-            {_t("Export CSV")}
-          </button>
+          {[
+            ["JSON", "json"],
+            ["CSV", "csv"],
+          ].map(([label, fmt]) => (
+            <button
+              key={fmt}
+              disabled={exporting !== null}
+              className="px-3 py-1.5 text-sm rounded-md border transition-colors disabled:opacity-50"
+              style={{ color: "var(--color-text-secondary)", borderColor: "var(--color-border)", background: "var(--color-surface)" }}
+              onClick={async () => {
+                setExporting(fmt);
+                try {
+                  const res = await fetch(`/stats-history?format=${fmt}&series=${granularity}`);
+                  const blob = await res.blob();
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `headroom-stats-history-${granularity}.${fmt}`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                } finally {
+                  setExporting(null);
+                }
+              }}
+            >
+              {exporting === fmt ? "Exporting…" : _t(`Export ${label}`)}
+            </button>
+          ))}
         </div>
       </div>
 

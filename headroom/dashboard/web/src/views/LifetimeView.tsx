@@ -4,6 +4,7 @@ import { useLifetimeStats } from "@/hooks/useLifetimeStats";
 import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LoadingBlock, ErrorBlock } from "@/components/ui/StatusBlock";
 import { fmtNum, fmtCurrency } from "@/lib/format";
 
 export function LifetimeView() {
@@ -12,11 +13,7 @@ export function LifetimeView() {
   const { data: ls } = useLifetimeStats(true);
 
   if (!ls) {
-    return (
-      <div className="flex items-center justify-center h-64" style={{ color: "var(--color-text-muted)" }}>
-        Loading lifetime data...
-      </div>
-    );
+    return <LoadingBlock message="Loading lifetime data…" />;
   }
 
   const projects = Object.entries(ls.projects || {});

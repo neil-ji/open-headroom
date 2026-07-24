@@ -42,6 +42,15 @@ export function App() {
 
   return (
     <>
+      {/* Skip to main content */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:rounded-md"
+        style={{ background: "var(--color-accent)", color: "#fff" }}
+      >
+        Skip to main content
+      </a>
+
       <Header
         version={version}
         logFullMessages={stats?.log_full_messages ?? false}

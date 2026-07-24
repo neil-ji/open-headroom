@@ -8,8 +8,8 @@
   --color-border: #E8E4DC;
   --color-border-light: #F0EDE7;
   --color-text: #1E1B18;
-  --color-text-secondary: #78746D;
-  --color-text-muted: #9D9890;
+  --color-text-secondary: #5C5853;
+  --color-text-muted: #78746D;
   --color-accent: #C86E2C;
   --color-accent-soft: rgba(200, 110, 44, 0.08);
   --color-accent-glow: rgba(200, 110, 44, 0.20);
@@ -27,6 +27,39 @@
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 20px;
+
+  /* ── Semantic waste-signal colors ── */
+  --color-waste-json:      #C88A2C;
+  --color-waste-html:      #C86E2C;
+  --color-waste-base64:    #C44E4E;
+  --color-waste-whitespace: #4A7DB5;
+  --color-waste-date:      #8B6FAD;
+  --color-waste-repetition: #C44E8B;
+  --color-waste-reread:    #2E8B7E;
+  --color-waste-reread-compressed: #C44E5E;
+
+  /* ── Semantic agent colors ── */
+  --color-agent-claude:    #C86E2C;
+  --color-agent-codex:     #3D8B7E;
+  --color-agent-cursor:    #2E8B8B;
+  --color-agent-copilot:   #8B6FAD;
+  --color-agent-openai:    #4A7DB5;
+  --color-agent-gemini:    #C44E5E;
+  --color-agent-aider:     #C8A02C;
+  --color-agent-default:   #78746D;
+
+  /* ── Throughput / pipeline colors ── */
+  --color-throughput-forward: #2E8B8B;
+  --color-pipeline-slow:   #C88A2C;
+  --color-pipeline-medium: #A8902C;
+
+  /* ── Live Feed diff panels ── */
+  --diff-before-header: #FDF0F0;
+  --diff-before-body:   #FFF5F5;
+  --diff-after-header:  #EDF7F4;
+  --diff-after-body:    #F5FAF8;
+  --diff-before-border: rgba(196, 78, 78, 0.25);
+  --diff-after-border:  rgba(61, 139, 126, 0.25);
 }
 
 html.dark {
@@ -36,8 +69,8 @@ html.dark {
   --color-border: #2D2A24;
   --color-border-light: #35322B;
   --color-text: #EBE7DE;
-  --color-text-secondary: #8B877B;
-  --color-text-muted: #6B675E;
+  --color-text-secondary: #9D9890;
+  --color-text-muted: #7D7870;
   --color-accent: #E8A048;
   --color-accent-soft: rgba(232, 160, 72, 0.10);
   --color-accent-glow: rgba(232, 160, 72, 0.18);
@@ -51,6 +84,39 @@ html.dark {
   --glass-border: rgba(255, 255, 255, 0.06);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.15);
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.15);
+
+  /* ── Semantic waste-signal colors (dark) ── */
+  --color-waste-json:      #E0A840;
+  --color-waste-html:      #E8A048;
+  --color-waste-base64:    #D4695A;
+  --color-waste-whitespace: #6BA5D6;
+  --color-waste-date:      #A890D0;
+  --color-waste-repetition: #D46998;
+  --color-waste-reread:    #5BAF9D;
+  --color-waste-reread-compressed: #D4806A;
+
+  /* ── Semantic agent colors (dark) ── */
+  --color-agent-claude:    #E8A048;
+  --color-agent-codex:     #5BAF9D;
+  --color-agent-cursor:    #4AB8B8;
+  --color-agent-copilot:   #A890D0;
+  --color-agent-openai:    #6BA5D6;
+  --color-agent-gemini:    #D4806A;
+  --color-agent-aider:     #E0C040;
+  --color-agent-default:   #9D9890;
+
+  /* ── Throughput / pipeline colors (dark) ── */
+  --color-throughput-forward: #4AB8B8;
+  --color-pipeline-slow:   #E0A840;
+  --color-pipeline-medium: #C0A830;
+
+  /* ── Live Feed diff panels (dark) ── */
+  --diff-before-header: #1A0A0A;
+  --diff-before-body:   #140808;
+  --diff-after-header:  #0A1A14;
+  --diff-after-body:    #081410;
+  --diff-before-border: rgba(212, 105, 90, 0.25);
+  --diff-after-border:  rgba(91, 175, 157, 0.25);
 }
 
 /* ── Base ── */
