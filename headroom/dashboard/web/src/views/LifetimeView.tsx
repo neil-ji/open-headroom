@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingBlock } from "@/components/ui/StatusBlock";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { fmtNum, fmtCurrency } from "@/lib/format";
 
 export function LifetimeView() {
@@ -18,6 +19,10 @@ export function LifetimeView() {
   }
 
   const projects = Object.entries(ls.projects || {});
+  const summaryReq = ls.requests?.total ?? 0;
+  const summaryFailed = ls.requests?.failed ?? 0;
+  const summaryRateLimited = ls.requests?.rate_limited ?? 0;
+  const summaryCached = ls.requests?.cached ?? 0;
 
   return (
     <PageLayout
@@ -26,17 +31,22 @@ export function LifetimeView() {
     >
       {/* Summary grid */}
       <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-4">
-        {[
-          [_t("Requests"), fmtNum(ls.requests?.total || 0), "var(--color-text)"],
-          [_t("Failed"), fmtNum(ls.requests?.failed || 0), "var(--color-negative)"],
-          [_t("Rate Limited"), fmtNum(ls.requests?.rate_limited || 0), "var(--color-warning)"],
-          [_t("Cached"), fmtNum(ls.requests?.cached || 0), "var(--color-positive)"],
-        ].map(([label, value, color]) => (
-          <Card key={label as string}>
-            <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>{label}</div>
-            <div className="text-2xl tabular-nums font-mono" style={{ color: color as string }}>{value}</div>
-          </Card>
-        ))}
+        <Card>
+          <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>{_t("Requests")}</div>
+          <AnimatedNumber className="text-2xl tabular-nums font-mono" style={{ color: "var(--color-text)" }} value={summaryReq} />
+        </Card>
+        <Card>
+          <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>{_t("Failed")}</div>
+          <AnimatedNumber className="text-2xl tabular-nums font-mono" style={{ color: "var(--color-negative)" }} value={summaryFailed} />
+        </Card>
+        <Card>
+          <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>{_t("Rate Limited")}</div>
+          <AnimatedNumber className="text-2xl tabular-nums font-mono" style={{ color: "var(--color-warning)" }} value={summaryRateLimited} />
+        </Card>
+        <Card>
+          <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>{_t("Cached")}</div>
+          <AnimatedNumber className="text-2xl tabular-nums font-mono" style={{ color: "var(--color-positive)" }} value={summaryCached} />
+        </Card>
       </div>
 
       <SectionHeader label={_t("Tokens & Cost")} />

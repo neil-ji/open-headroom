@@ -1,6 +1,7 @@
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Card, CardInner } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { LoadingBlock } from "@/components/ui/StatusBlock";
 import { useAppContext } from "@/context/AppContext";
 import { useStats } from "@/hooks/useStats";
@@ -57,11 +58,11 @@ export function ClientsPage() {
           {/* Totals */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
             {[
-              [_t("Before"), fmtNum(stats.agent_usage?.totals?.before_tokens || 0)],
-              [_t("After"), fmtNum(stats.agent_usage?.totals?.after_tokens || 0)],
-              [_t("Saved"), fmtNum(stats.agent_usage?.totals?.tokens_saved || 0)],
-              [_t("Savings"), `${(stats.agent_usage?.totals?.savings_percent || 0).toFixed(1)}%`],
-            ].map(([label, value], i) => (
+              [_t("Before"), stats.agent_usage?.totals?.before_tokens || 0, true],
+              [_t("After"), stats.agent_usage?.totals?.after_tokens || 0, true],
+              [_t("Saved"), stats.agent_usage?.totals?.tokens_saved || 0, true],
+              [_t("Savings"), `${(stats.agent_usage?.totals?.savings_percent || 0).toFixed(1)}%`, false],
+            ].map(([label, value, animate], i) => (
               <CardInner key={i}>
                 <div
                   className="text-xs font-medium uppercase tracking-[0.12em] mb-1"
@@ -69,14 +70,24 @@ export function ClientsPage() {
                 >
                   {label}
                 </div>
-                <div
-                  className="text-2xl font-light tabular-nums font-mono"
-                  style={{
-                    color: i >= 2 ? "var(--color-accent)" : i === 3 ? "var(--color-positive)" : "var(--color-text)",
-                  }}
-                >
-                  {value}
-                </div>
+                {animate ? (
+                  <AnimatedNumber
+                    className="text-2xl font-light tabular-nums font-mono"
+                    style={{
+                      color: i >= 2 ? "var(--color-accent)" : "var(--color-text)",
+                    }}
+                    value={value as number}
+                  />
+                ) : (
+                  <div
+                    className="text-2xl font-light tabular-nums font-mono"
+                    style={{
+                      color: i === 3 ? "var(--color-positive)" : "var(--color-text)",
+                    }}
+                  >
+                    {value as string}
+                  </div>
+                )}
               </CardInner>
             ))}
           </div>

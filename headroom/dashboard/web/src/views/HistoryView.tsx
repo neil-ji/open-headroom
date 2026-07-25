@@ -7,7 +7,8 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { LoadingBlock } from "@/components/ui/StatusBlock";
-import { TrendSparkline } from "@/components/charts/Sparkline";
+import { TrendChart } from "@/components/charts/TrendChart";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { fmtNum, fmtCurrency, fmtDate, truncateModel } from "@/lib/format";
 import { Tabs, Tab, TabList, Button } from "@spark-ui/components";
 
@@ -28,6 +29,19 @@ export function HistoryView() {
   const series = granularity === "history"
     ? hs.history || []
     : hs.series?.[granularity] || [];
+
+  // Adapt history data for Recharts — add formatted timestamp
+  const chartData = series.map((p) => ({
+    ts: new Date(p.timestamp).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+    tokens_saved: p.tokens_saved,
+    total_tokens_saved: p.total_tokens_saved,
+  }));
+
+  // Animated summary values
+  const lifetimeTokensSaved = hs.lifetime?.tokens_saved || 0;
+  const activeDays = (hs.series?.daily || []).length;
+  const avgSavedDay = Math.round(lifetimeTokensSaved / Math.max(activeDays, 1));
+  const avgSavedWeek = Math.round(lifetimeTokensSaved / Math.max((hs.series?.weekly || []).length, 1));
 
   return (
     <PageLayout
@@ -68,15 +82,23 @@ export function HistoryView() {
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
         {[
-          [_t("Lifetime Compression Savings"), `$${fmtCurrency(hs.lifetime?.compression_savings_usd || 0)}`, "var(--color-positive)"],
-          [_t("Lifetime Tokens Saved"), fmtNum(hs.lifetime?.tokens_saved || 0), "var(--color-accent)"],
-          [_t("Active Days"), fmtNum((hs.series?.daily || []).length), "var(--color-text)"],
-          [_t("Average Saved / Day"), fmtNum(Math.round((hs.lifetime?.tokens_saved || 0) / Math.max((hs.series?.daily || []).length, 1))), "var(--color-text)"],
-          [_t("Average Saved / Week"), fmtNum(Math.round((hs.lifetime?.tokens_saved || 0) / Math.max((hs.series?.weekly || []).length, 1))), "var(--color-text)"],
-        ].map(([label, value, color]) => (
+          [_t("Lifetime Compression Savings"), `$${fmtCurrency(hs.lifetime?.compression_savings_usd || 0)}`, "var(--color-positive)", false],
+          [_t("Lifetime Tokens Saved"), lifetimeTokensSaved, "var(--color-accent)", true],
+          [_t("Active Days"), activeDays, "var(--color-text)", true],
+          [_t("Average Saved / Day"), avgSavedDay, "var(--color-text)", true],
+          [_t("Average Saved / Week"), avgSavedWeek, "var(--color-text)", true],
+        ].map(([label, value, color, animate]) => (
           <Card key={label as string}>
             <div className="text-xs font-medium uppercase tracking-[0.12em] mb-1" style={{ color: "var(--color-text-muted)" }}>{label}</div>
-            <div className="text-3xl font-light tabular-nums font-mono" style={{ color: color as string }}>{value}</div>
+            {animate ? (
+              <AnimatedNumber
+                className="text-3xl font-light tabular-nums font-mono"
+                style={{ color: color as string }}
+                value={value as number}
+              />
+            ) : (
+              <div className="text-3xl font-light tabular-nums font-mono" style={{ color: color as string }}>{value as string}</div>
+            )}
           </Card>
         ))}
       </div>
@@ -105,10 +127,8 @@ export function HistoryView() {
           {/* Trend chart */}
           <SectionHeader label={_t("Historical Savings Trend")} />
           {series.length >= 2 ? (
-            <Card className="mb-6">
-              <div className="h-48">
-                <TrendSparkline data={series as unknown as Record<string, unknown>[]} valueKey="total_tokens_saved" height={96} />
-              </div>
+            <Card className="mb-6 p-4">
+              <TrendChart data={chartData as unknown as Record<string, unknown>[]} valueKey="total_tokens_saved" timeKey="ts" height={200} />
             </Card>
           ) : (
             <EmptyState message={_t("Need more data points for trend.")} />

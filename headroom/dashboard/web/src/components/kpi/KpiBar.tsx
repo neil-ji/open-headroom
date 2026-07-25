@@ -1,4 +1,6 @@
 import { CompressionMeter } from "./CompressionMeter";
+import { ThroughputGauge } from "./ThroughputGauge";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { StatLabel } from "@/components/ui/EmptyState";
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";
@@ -36,23 +38,21 @@ export function KpiBar({ stats }: KpiBarProps) {
         <CompressionMeter percentage={savingsPct} />
         <div>
           <StatLabel>{_t("Token Savings")}</StatLabel>
-          <div
+          <AnimatedNumber
             className="text-xl font-mono"
             style={{ color: "var(--color-text)" }}
-          >
-            {fmtNum(totalTokens)}
-          </div>
+            value={totalTokens}
+          />
         </div>
       </div>
       {/* Requests */}
       <div className="text-center md:text-left">
         <StatLabel>{_t("Requests")}</StatLabel>
-        <div
+        <AnimatedNumber
           className="text-lg font-mono"
           style={{ color: "var(--color-text)" }}
-        >
-          {fmtNum(totalRequests)}
-        </div>
+          value={totalRequests}
+        />
         <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>
           <span style={{ color: "var(--color-negative)" }}>
             {fmtNum(failedRequests)} {_t("failed")}
@@ -75,12 +75,11 @@ export function KpiBar({ stats }: KpiBarProps) {
       {/* Output Tokens */}
       <div className="text-center md:text-left">
         <StatLabel>{_t("Output Tokens")}</StatLabel>
-        <div
+        <AnimatedNumber
           className="text-lg font-mono"
           style={{ color: "var(--color-text)" }}
-        >
-          {fmtNum(outputTokens)}
-        </div>
+          value={outputTokens}
+        />
         <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>
           {stats.tokens?.output_reduction?.available && (
             <span style={{ color: "var(--color-positive)" }}>
@@ -89,8 +88,16 @@ export function KpiBar({ stats }: KpiBarProps) {
           )}
         </div>
       </div>
-      {/* Throughput */}
-      <div className="text-center md:text-left hidden lg:block">
+      {/* Throughput — replaced with gauge on desktop */}
+      <div className="col-span-2 md:col-span-1 hidden lg:flex flex-col items-center justify-center">
+        <ThroughputGauge
+          value={throughput}
+          label={_t("Throughput")}
+          unit="tok/s"
+        />
+      </div>
+      {/* Throughput — text fallback on mobile/tablet */}
+      <div className="text-center md:text-left lg:hidden">
         <StatLabel>{_t("Throughput")}</StatLabel>
         <div
           className="text-lg font-mono"

@@ -3,6 +3,7 @@ import { KpiBar } from "@/components/kpi/KpiBar";
 import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { LoadingBlock } from "@/components/ui/StatusBlock";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { useAppContext } from "@/context/AppContext";
 import { useStats } from "@/hooks/useStats";
 import { t } from "@/i18n/translations";
@@ -34,16 +35,18 @@ export function OverviewPage() {
           </h3>
           <div className="grid grid-cols-2 gap-3 text-sm">
             {[
-              [_t("Completed"), fmtNum(stats.requests?.total || 0), "var(--color-text)"],
-              [_t("Failed"), fmtNum(stats.requests?.failed || 0), "var(--color-negative)"],
-              [_t("Rate Limited"), fmtNum(stats.requests?.rate_limited || 0), "var(--color-warning)"],
-              [_t("Cached"), fmtNum(stats.requests?.cached || 0), "var(--color-positive)"],
+              [_t("Completed"), stats.requests?.total || 0, "var(--color-text)"],
+              [_t("Failed"), stats.requests?.failed || 0, "var(--color-negative)"],
+              [_t("Rate Limited"), stats.requests?.rate_limited || 0, "var(--color-warning)"],
+              [_t("Cached"), stats.requests?.cached || 0, "var(--color-positive)"],
             ].map(([label, value, color]) => (
               <div key={label as string}>
                 <span style={{ color: "var(--color-text-secondary)" }}>{label}</span>
-                <span className="float-right tabular-nums font-mono" style={{ color: color as string }}>
-                  {value}
-                </span>
+                <AnimatedNumber
+                  className="float-right tabular-nums font-mono"
+                  style={{ color: color as string }}
+                  value={value as number}
+                />
               </div>
             ))}
           </div>

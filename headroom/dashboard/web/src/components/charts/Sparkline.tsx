@@ -4,6 +4,7 @@ interface SparklineProps {
   className?: string;
 }
 
+/** @deprecated Use {@link TrendChart} (Recharts-based) for new chart features. */
 export function Sparkline({ data, height = 32, className }: SparklineProps) {
   if (!data || data.length < 2) return null;
 
@@ -49,6 +50,7 @@ export function Sparkline({ data, height = 32, className }: SparklineProps) {
   );
 }
 
+/** @deprecated Use {@link TrendChart} (Recharts-based) for new chart features. */
 export function TrendSparkline({ data, height = 64, valueKey }: {
   data: Record<string, unknown>[];
   height?: number;

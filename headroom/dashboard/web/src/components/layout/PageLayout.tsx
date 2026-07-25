@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 
 interface PageLayoutProps {
   /** Page heading — rendered as <h1> if provided. */
@@ -13,14 +14,26 @@ interface PageLayoutProps {
   children: ReactNode;
 }
 
+const pageVariants = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -12 },
+};
+
 /**
  * Unified page layout for all dashboard views.
- * Provides consistent margins, max-width, scroll behaviour, and optional title area.
+ * Provides consistent margins, max-width, scroll behaviour, optional title area,
+ * and animated page transitions via framer-motion.
  */
 export function PageLayout({ title, description, headerExtra, className, children }: PageLayoutProps) {
   const cn = (...args: (string | undefined)[]) => args.filter(Boolean).join(" ");
   return (
-    <div
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.25, ease: "easeOut" }}
       className={cn("px-4 py-5 md:px-6 md:py-6 max-w-7xl mx-auto w-full", className)}
       id="main-content"
     >
@@ -38,6 +51,6 @@ export function PageLayout({ title, description, headerExtra, className, childre
         </header>
       )}
       {children}
-    </div>
+    </motion.div>
   );
 }

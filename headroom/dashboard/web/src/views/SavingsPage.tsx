@@ -5,7 +5,9 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingBlock } from "@/components/ui/StatusBlock";
-import { Sparkline, TrendSparkline } from "@/components/charts/Sparkline";
+import { Sparkline } from "@/components/charts/Sparkline";
+import { TrendChart } from "@/components/charts/TrendChart";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { useAppContext } from "@/context/AppContext";
 import { useStats } from "@/hooks/useStats";
 import { t } from "@/i18n/translations";
@@ -80,9 +82,11 @@ export function SavingsPage() {
             {_t("Token Savings")}
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-light tabular-nums font-mono" style={{ color: "var(--color-accent)" }}>
-              {fmtNum(stats.tokens?.saved || 0)}
-            </span>
+            <AnimatedNumber
+              className="text-3xl font-light tabular-nums font-mono"
+              style={{ color: "var(--color-accent)" }}
+              value={stats.tokens?.saved || 0}
+            />
             <span className="text-sm" style={{ color: "var(--color-accent)" }}>
               {(stats.tokens?.savings_percent || 0).toFixed(1)}%
             </span>
@@ -108,9 +112,11 @@ export function SavingsPage() {
           {stats.tokens?.output_reduction?.available ? (
             <>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-light tabular-nums font-mono" style={{ color: "var(--color-accent)" }}>
-                  {fmtNum(stats.tokens?.output_saved || 0)}
-                </span>
+                <AnimatedNumber
+                  className="text-3xl font-light tabular-nums font-mono"
+                  style={{ color: "var(--color-accent)" }}
+                  value={stats.tokens?.output_saved || 0}
+                />
                 <span className="text-sm" style={{ color: "var(--color-accent)" }}>
                   {(stats.tokens?.output_reduction_percent || 0).toFixed(1)}%
                 </span>
@@ -228,13 +234,12 @@ export function SavingsPage() {
             </span>
           </div>
           {savingsHistory.current.length >= 2 ? (
-            <div className="h-32">
-              <TrendSparkline
-                data={savingsHistory.current.map((v, i) => ({ i, v }))}
-                valueKey="v"
-                height={64}
-              />
-            </div>
+            <TrendChart
+              data={savingsHistory.current.map((v, i) => ({ ts: String(i), v }))}
+              valueKey="v"
+              timeKey="ts"
+              height={160}
+            />
           ) : (
             <EmptyState message={_t("Trend data will appear after multiple requests.")} />
           )}

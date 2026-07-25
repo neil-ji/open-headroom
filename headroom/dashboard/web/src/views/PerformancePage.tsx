@@ -1,7 +1,9 @@
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { LoadingBlock } from "@/components/ui/StatusBlock";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { ThroughputGauge, ThroughputGaugeCompact } from "@/components/kpi/ThroughputGauge";
+import { PipelineBarChart } from "@/components/charts/PipelineBarChart";
 import { useAppContext } from "@/context/AppContext";
 import { useStats } from "@/hooks/useStats";
 import { t } from "@/i18n/translations";
@@ -12,12 +14,12 @@ export function PerformancePage() {
   const _t = (k: string) => t(k, lang);
   const { data: stats } = useStats();
 
-  if (!stats) {
-    return <LoadingBlock message={_t("Loading session stats…")} />;
-  }
+  if (!stats) return null;
 
-  // Cache active check
   const cacheActive = (stats.prefix_cache?.totals?.requests || 0) > 0;
+  const pipelineStages = Object.entries(stats.pipeline_timing || {}).map(
+    ([name, t]) => ({ name, average_ms: t.average_ms, max_ms: t.max_ms }),
+  );
 
   return (
     <PageLayout
@@ -27,6 +29,7 @@ export function PerformancePage() {
       {/* ── Section: Performance ── */}
       <SectionHeader label={_t("Performance")} />
       <div className="grid grid-cols-1 gap-4 mb-6 lg:grid-cols-3">
+        {/* Overhead Card */}
         <Card>
           <div
             className="text-xs font-medium uppercase tracking-[0.12em] mb-1"
@@ -42,97 +45,70 @@ export function PerformancePage() {
           <div className="mt-2 text-xs" style={{ color: "var(--color-text-muted)" }}>
             TTFB {((stats.ttfb?.average_ms || 0) / 1000).toFixed(2)}s avg
           </div>
+          <div className="mt-3 text-xs space-y-1">
+            <div className="flex justify-between" style={{ color: "var(--color-text-secondary)" }}>
+              <span>{_t("Range")}</span>
+              <span className="font-mono">
+                {(stats.overhead?.min_ms || 0).toFixed(0)}–{(stats.overhead?.max_ms || 0).toFixed(0)}ms
+              </span>
+            </div>
+            <div className="flex justify-between" style={{ color: "var(--color-text-secondary)" }}>
+              <span>{_t("TTFB Range")}</span>
+              <span className="font-mono">
+                {((stats.ttfb?.min_ms || 0) / 1000).toFixed(2)}–{((stats.ttfb?.max_ms || 0) / 1000).toFixed(2)}s
+              </span>
+            </div>
+            <div className="flex justify-between" style={{ color: "var(--color-text-secondary)" }}>
+              <span>{_t("Failed")}</span>
+              <span className="font-mono" style={{ color: "var(--color-negative)" }}>
+                {stats.requests?.failed || 0}
+              </span>
+            </div>
+          </div>
         </Card>
 
-        <Card>
+        {/* Throughput Gauge Card */}
+        <Card className="flex flex-col items-center">
           <div
-            className="text-xs font-medium uppercase tracking-[0.12em] mb-1.5"
+            className="text-xs font-medium uppercase tracking-[0.12em] mb-2 self-start"
             style={{ color: "var(--color-text-muted)" }}
           >
             {_t("Throughput")}
           </div>
-          <div className="flex flex-col gap-1 text-[11px]">
+          <div className="w-full max-w-[240px]">
+            <ThroughputGaugeCompact
+              value={stats.throughput?.rolling?.input_wall_clock || 0}
+              label={_t("Input")}
+              unit="tok/s"
+            />
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] w-full">
             {[
-              [
-                _t("Input (wall / active p50)"),
-                `${(stats.throughput?.rolling?.input_wall_clock || 0).toFixed(1)} / ${(stats.throughput?.rolling?.input_active_p50 || 0).toFixed(1)}`,
-                "var(--color-accent)",
-              ],
-              [
-                _t("Forward (p50 / p95)"),
-                `${(stats.throughput?.rolling?.forward_p50 || 0).toFixed(1)} / ${(stats.throughput?.rolling?.forward_p95 || 0).toFixed(1)}`,
-                "var(--color-throughput-forward)",
-              ],
-            ].map(([label, value, color]) => (
-              <div key={label} className="flex justify-between border-b border-[var(--color-border)] pb-0.5">
-                <span style={{ color: "var(--color-text-muted)" }}>{label}</span>
-                <span className="font-mono" style={{ color: color as string }}>
-                  {value} {_t("tok/s")}
-                </span>
+              [_t("Forward p50"), `${(stats.throughput?.rolling?.forward_p50 || 0).toFixed(1)}`, "var(--color-throughput-forward)"],
+              [_t("Forward p95"), `${(stats.throughput?.rolling?.forward_p95 || 0).toFixed(1)}`, "var(--color-throughput-forward)"],
+              [_t("Compression p50"), `${(stats.throughput?.rolling?.compression_p50 || 0).toFixed(1)}`, "var(--color-accent)"],
+              [_t("Generation p50"), `${(stats.throughput?.rolling?.generation_p50 || 0).toFixed(1)}`, "var(--color-text)"],
+            ].map(([l, v, c]) => (
+              <div key={l as string} className="flex justify-between">
+                <span style={{ color: "var(--color-text-muted)" }}>{l}</span>
+                <span className="font-mono" style={{ color: c as string }}>{v} tok/s</span>
               </div>
             ))}
           </div>
         </Card>
 
+        {/* Pipeline Timing Chart */}
         <Card>
-          <h3 className="text-sm font-medium mb-4" style={{ color: "var(--color-text)" }}>
-            {_t("Performance")}
+          <h3 className="text-sm font-medium mb-3" style={{ color: "var(--color-text)" }}>
+            {_t("Pipeline Breakdown")}
           </h3>
-          <div className="space-y-3">
-            {[
-              [
-                _t("Overhead Range"),
-                `${(stats.overhead?.min_ms || 0).toFixed(0)} - ${(stats.overhead?.max_ms || 0).toFixed(0)}ms`,
-              ],
-              [
-                _t("TTFB Range"),
-                `${((stats.ttfb?.min_ms || 0) / 1000).toFixed(2)} - ${((stats.ttfb?.max_ms || 0) / 1000).toFixed(2)}s`,
-              ],
-              [_t("Failed Requests"), String(stats.requests?.failed || 0)],
-            ].map(([label, value]) => (
-              <div key={label} className="flex justify-between items-center">
-                <span className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
-                  {label}
-                </span>
-                <span className="font-mono text-sm">{value}</span>
-              </div>
-            ))}
-            {/* Pipeline breakdown */}
-            {Object.keys(stats.pipeline_timing || {}).length > 0 && (
-              <div>
-                <hr className="my-2" style={{ borderColor: "var(--color-border)" }} />
-                <div
-                  className="text-xs font-medium uppercase tracking-[0.12em] mb-2"
-                  style={{ color: "var(--color-text-muted)" }}
-                >
-                  {_t("Pipeline Breakdown")}
-                </div>
-                {Object.entries(stats.pipeline_timing || {}).map(([name, t]) => (
-                  <div key={name} className="flex justify-between items-center mb-1">
-                    <span
-                      className="text-xs font-mono truncate mr-2"
-                      style={{ color: "var(--color-text-secondary)" }}
-                    >
-                      {name}
-                    </span>
-                    <span
-                      className="text-xs font-mono whitespace-nowrap"
-                      style={{
-                        color:
-                          t.average_ms > 100
-                            ? "var(--color-pipeline-slow)"
-                            : t.average_ms > 50
-                              ? "var(--color-pipeline-medium)"
-                              : "var(--color-text-secondary)",
-                      }}
-                    >
-                      {t.average_ms.toFixed(0)}ms avg / {t.max_ms.toFixed(0)}ms max
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {pipelineStages.length > 0 ? (
+            <PipelineBarChart stages={pipelineStages} />
+          ) : (
+            <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
+              {_t("No pipeline timing data yet.")}
+            </p>
+          )}
         </Card>
       </div>
 
