@@ -50,7 +50,7 @@ plugins/
 !plugins/openclaw/**
 !plugins/headroom-agent-hooks/
 !plugins/headroom-agent-hooks/**
-node_modules/
+**/node_modules/
 *.tgz
 
 # Secrets & local config
