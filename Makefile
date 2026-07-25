@@ -145,10 +145,13 @@ install-git-hooks:
 
 # ─── Blue-green deployment ──────────────────────────────────────────────────
 
-.PHONY: deploy deploy-status
+.PHONY: deploy deploy-status rollback
 
 deploy:
 	@bash scripts/deploy.sh
+
+rollback:
+	@bash scripts/rollback.sh
 
 deploy-status:
 	@echo "Active color: $${ACTIVE_COLOR:-blue}"
