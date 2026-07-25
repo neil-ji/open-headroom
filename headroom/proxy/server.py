@@ -56,7 +56,7 @@ try:
     import uvicorn
     from fastapi import Depends, FastAPI, HTTPException, Request, Response
     from fastapi.middleware.cors import CORSMiddleware
-    from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse
+    from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, StreamingResponse
 
     FASTAPI_AVAILABLE = True
 except ImportError:
@@ -4154,6 +4154,75 @@ def create_app(config: ProxyConfig | None = None) -> FastAPI:
             "accuracy_guard": config.accuracy_guard,
         }
 
+    def _build_tick_payload() -> dict[str, Any]:
+        """Build a lightweight tick payload from core PrometheusMetrics counters.
+
+        Only reads simple int/float attributes — no locks, no subsystem calls,
+        no async work. Returns a subset of StatsResponse the frontend can
+        shallow-merge onto the last full snapshot.
+        """
+        m = proxy.metrics
+
+        def _avg(sum_ms: float, count: int) -> float:
+            return round(sum_ms / count, 2) if count > 0 else 0.0
+
+        return {
+            "tokens": {
+                "saved": m.tokens_saved_total,
+                "input": m.tokens_input_total,
+                "output": m.tokens_output_total,
+                "savings_percent": round(
+                    (m.tokens_saved_total / max(m.tokens_input_total + m.tokens_saved_total, 1))
+                    * 100,
+                    2,
+                ),
+            },
+            "requests": {
+                "total": m.requests_total,
+                "failed": m.requests_failed,
+                "rate_limited": m.requests_rate_limited,
+                "cached": m.requests_cached,
+            },
+            "proxy_inbound": {"active": m.inbound_requests_active},
+            "overhead": {"average_ms": _avg(m.overhead_sum_ms, m.overhead_count)},
+            "ttfb": {"average_ms": _avg(m.ttfb_sum_ms, m.ttfb_count)},
+        }
+
+    async def _stats_event_stream(request: Request):
+        """SSE event stream: 1 s tick (light) + 5 s snapshot (full).
+
+        Sends an immediate snapshot on connect so the dashboard never waits
+        the full interval for initial data.  The tick carries a tiny subset
+        of StatsResponse — only counters that are plain attribute reads on
+        PrometheusMetrics (O(1), no locks).  The snapshot reuses the existing
+        ``_get_cached_stats_payload()`` cache.
+        """
+        tick_interval = 1.0
+        snapshot_interval = 5.0
+
+        # Send snapshot immediately on connect.
+        payload = await _get_cached_stats_payload()
+        yield f"event: snapshot\ndata: {json.dumps(payload)}\n\n".encode()
+        last_snapshot = time.monotonic()
+
+        try:
+            while True:
+                if await request.is_disconnected():
+                    break
+
+                await asyncio.sleep(tick_interval)
+                now = time.monotonic()
+
+                if now - last_snapshot >= snapshot_interval:
+                    payload = await _get_cached_stats_payload()
+                    yield f"event: snapshot\ndata: {json.dumps(payload)}\n\n".encode()
+                    last_snapshot = now
+                else:
+                    tick = _build_tick_payload()
+                    yield f"event: tick\ndata: {json.dumps(tick)}\n\n".encode()
+        except asyncio.CancelledError:
+            pass
+
     async def _get_cached_stats_payload() -> dict[str, Any]:
         """Return a short-TTL cached `/stats` snapshot for dashboard polling."""
         now = time.monotonic()
@@ -4212,6 +4281,25 @@ def create_app(config: ProxyConfig | None = None) -> FastAPI:
             payload.pop("recent_requests", None)
             payload.pop("request_logs", None)
         return payload
+
+    @app.get("/stats/stream")
+    async def stats_stream(request: Request):
+        """SSE stream delivering live proxy stats.
+
+        Sends a ``tick`` event every 1 s with lightweight core counters
+        (tokens, requests, active sessions, overhead, TTFB) and a
+        ``snapshot`` event every 5 s with the full ``StatsResponse``
+        payload.  An initial snapshot is pushed immediately on connect.
+        """
+        return StreamingResponse(
+            _stats_event_stream(request),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",
+            },
+        )
 
     @app.get("/stats-lifetime")
     async def stats_lifetime(request: Request):

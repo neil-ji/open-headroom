@@ -33,7 +33,7 @@ export function App() {
   const [feedOpen, setFeedOpen] = useState(false);
   const location = useLocation();
 
-  const { data: stats } = useStats();
+  const { data: stats, reconnect: reconnectStats } = useStats();
   const { data: health } = useHealth();
   const { data: feedData } = useTransformations(feedOpen);
 
@@ -44,12 +44,16 @@ export function App() {
         const tag = (e.target as HTMLElement)?.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
         e.preventDefault();
-        queryClient.invalidateQueries();
+        reconnectStats();
+        queryClient.invalidateQueries({ queryKey: ["health"] });
+        queryClient.invalidateQueries({ queryKey: ["transformations"] });
+        queryClient.invalidateQueries({ queryKey: ["historyStats"] });
+        queryClient.invalidateQueries({ queryKey: ["lifetimeStats"] });
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [queryClient]);
+  }, [queryClient, reconnectStats]);
 
   const toggleFeed = useCallback(() => setFeedOpen((v) => !v), []);
 
