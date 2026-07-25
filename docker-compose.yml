@@ -62,6 +62,9 @@ services:
       - ANTHROPIC_TARGET_API_URL=https://api.deepseek.com/anthropic
       # Enable on-demand tool loading to avoid sending 88 tools (~140KB) eagerly.
       - ENABLE_TOOL_SEARCH=true
+      # Use token mode: compress full message list, no prompt-cache constraint.
+      # DeepSeek ignores cache_control, so cache mode is counterproductive.
+      - HEADROOM_MODE=token
     ports:
       - "8788:8787"   # Internal — Caddy routes here via hostname
     volumes:
@@ -98,6 +101,7 @@ services:
       - HEADROOM_PROXY_TRUSTED_GATEWAY_CIDRS=172.16.0.0/12
       - ANTHROPIC_TARGET_API_URL=https://api.deepseek.com/anthropic
       - ENABLE_TOOL_SEARCH=true
+      - HEADROOM_MODE=token
     ports:
       - "8789:8787"   # Internal — Caddy routes here via hostname
     volumes:
