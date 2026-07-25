@@ -1,6 +1,7 @@
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";
 import { useLifetimeStats } from "@/hooks/useLifetimeStats";
+import { PageLayout } from "@/components/layout/PageLayout";
 import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -19,23 +20,10 @@ export function LifetimeView() {
   const projects = Object.entries(ls.projects || {});
 
   return (
-    <div>
-      <div className="mb-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-            {_t("Lifetime data since")} {ls.started_at || "—"}
-          </p>
-          <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-            {_t("Full metric coverage since")} {ls.full_fidelity_started_at || "—"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-xs" style={{ color: "var(--color-text-muted)" }}>
-          <span style={{ color: ls.persistence?.healthy !== false ? "var(--color-positive)" : "var(--color-warning)" }}>
-            {ls.persistence?.healthy !== false ? _t("Persistence healthy") : `${_t("Persistence degraded")}: ${ls.persistence?.error || _t("unknown")}`}
-          </span>
-        </div>
-      </div>
-
+    <PageLayout
+      title={_t("Lifetime")}
+      description={_t("Cumulative savings across all sessions since") + " " + (ls.started_at || "—")}
+    >
       {/* Summary grid */}
       <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-4">
         {[
@@ -178,6 +166,6 @@ export function LifetimeView() {
           {Object.keys(ls.by_model || {}).length === 0 && <EmptyState message={_t("No data")} />}
         </Card>
       </div>
-    </div>
+    </PageLayout>
   );
 }

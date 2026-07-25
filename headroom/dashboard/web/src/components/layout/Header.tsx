@@ -1,41 +1,24 @@
-import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
-import { Sun, Moon, MessageSquareText, SettingsIcon } from "lucide-react";
+import { Sun, Moon, MessageSquareText } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";
 import { useHealth } from "@/hooks/useStats";
-import { Select, Button, Tag } from "@spark-ui/components";
+import { Select, Button } from "@spark-ui/components";
 
 export function Header({
-  version,
   logFullMessages,
   feedOpen,
-  lastUpdated,
   onToggleFeed,
   onToggleTheme,
 }: {
-  version: string;
   logFullMessages: boolean;
   feedOpen: boolean;
-  lastUpdated?: number;
   onToggleFeed: () => void;
   onToggleTheme: () => void;
 }) {
   const { lang, setLang } = useAppContext();
   const { data: health } = useHealth();
   const healthy = health?.status === "healthy";
-
   const _t = (key: string) => t(key, lang);
-
-  // Relative time since last data fetch
-  const [ageSec, setAgeSec] = useState(0);
-  useEffect(() => {
-    if (!lastUpdated) return;
-    const tick = () => setAgeSec(Math.round((Date.now() - lastUpdated) / 1000));
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [lastUpdated]);
 
   const langOptions = [
     { value: "en", label: "EN" },
@@ -43,133 +26,53 @@ export function Header({
   ];
 
   return (
-    <header className="glass-header sticky top-0 z-40 px-5 py-3">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        {/* Left: Logo */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2.5">
-            <svg
-              className="w-6 h-6"
-              viewBox="0 0 24 24"
-              fill="none"
-              style={{ color: "var(--color-accent)" }}
-            >
-              <rect x="3" y="4" width="4" height="16" rx="1.5" fill="currentColor" opacity="0.9" />
-              <rect x="9" y="7" width="4" height="10" rx="1.5" fill="currentColor" opacity="0.65" />
-              <rect x="15" y="2" width="4" height="20" rx="1.5" fill="currentColor" opacity="0.4" />
-            </svg>
-            <h1 className="text-lg font-bold tracking-tight" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
-              HEADROOM
-            </h1>
-          </div>
-          <Tag variant="muted" size="sm">
-            {version ? `v${version}` : _t("loading")}
-          </Tag>
-        </div>
+    <header
+      className="glass-header sticky top-0 z-40 flex items-center justify-end gap-3 px-5 py-2"
+    >
+      {/* Status dot */}
+      <span
+        className="w-2 h-2 rounded-full pulse-live shrink-0"
+        role="img"
+        aria-label={healthy ? "Healthy" : "Error"}
+        style={{
+          background: healthy
+            ? "var(--color-positive)"
+            : "var(--color-negative)",
+        }}
+      />
 
-        {/* Right: controls */}
-        <div className="flex flex-col gap-2.5 md:flex-row md:items-center md:gap-4">
-          {/* View tabs (keep as NavLinks — they navigate routes) */}
-          <div
-            className="inline-flex rounded-[10px] p-0.5 gap-0.5"
-            style={{
-              border: "1px solid var(--color-border)",
-              background: "var(--color-surface-alt)",
-            }}
-          >
-            {[
-              ["/dashboard", _t("Session")],
-              ["/dashboard?view=lifetime", _t("Lifetime")],
-              ["/dashboard?view=history", _t("Historical")],
-            ].map(([to, label]) => (
-              <NavLink
-                key={to}
-                to={to}
-                className={({ isActive }) =>
-                  `px-3 py-2.5 text-sm rounded-md transition-colors font-medium ${
-                    isActive
-                      ? "text-white"
-                      : ""
-                  }`
-                }
-                style={({ isActive }) =>
-                  isActive
-                    ? { background: "var(--color-accent)" }
-                    : { color: "var(--color-text-secondary)" }
-                }
-              >
-                {label}
-              </NavLink>
-            ))}
-          </div>
-
-          {/* Status */}
-          <div className="flex items-center gap-2">
-            <span
-              className="w-2 h-2 rounded-full pulse-live"
-              role="img"
-              aria-label={healthy ? _t("Healthy") : _t("Error")}
-              style={{
-                background: healthy
-                  ? "var(--color-positive)"
-                  : "var(--color-negative)",
-              }}
-            />
-            <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
-              {healthy ? _t("Healthy") : _t("Error")}
-            </span>
-          </div>
-
-          {/* Freshness */}
-          {lastUpdated ? (
-            <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-              {_t("Updated")} {ageSec < 60 ? `${ageSec}${_t("s ago")}` : `${Math.floor(ageSec / 60)}${_t("m ago")}`}
-            </span>
-          ) : null}
-
-          {/* Lang switcher */}
-          <Select
-            options={langOptions}
-            value={lang}
-            onChange={(v) => setLang(v as "en" | "zh")}
-            size="sm"
-            aria-label={_t("Language")}
-          />
-
-          {/* Settings */}
-          <NavLink
-            to="/dashboard/settings"
-            className="p-2.5 rounded-md transition-colors"
-            style={{ color: "var(--color-text-secondary)" }}
-            aria-label={_t("Settings")}
-          >
-            <SettingsIcon className="w-5 h-5" />
-          </NavLink>
-
-          {/* Theme toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onToggleTheme}
-            aria-label={_t("Toggle light/dark mode")}
-          >
-            <Sun className="w-5 h-5 dark:hidden" />
-            <Moon className="w-5 h-5 hidden dark:block" />
-          </Button>
-
-          {/* Live Feed */}
-          {logFullMessages && (
-            <Button
-              variant={feedOpen ? "primary" : "secondary"}
-              size="sm"
-              onClick={onToggleFeed}
-              leftIcon={<MessageSquareText className="w-4 h-4" />}
-            >
-              {_t("Live Feed")}
-            </Button>
-          )}
-        </div>
+      {/* Lang — fixed width to prevent stretching */}
+      <div style={{ width: 112 }}>
+        <Select
+          options={langOptions}
+          value={lang}
+          onChange={(v) => setLang(v as "en" | "zh")}
+          size="sm"
+        />
       </div>
+
+      {/* Theme toggle */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onToggleTheme}
+        aria-label={_t("Toggle light/dark mode")}
+      >
+        <Sun className="w-4 h-4 dark:hidden" />
+        <Moon className="w-4 h-4 hidden dark:block" />
+      </Button>
+
+      {/* Live Feed */}
+      {logFullMessages && (
+        <Button
+          variant={feedOpen ? "primary" : "secondary"}
+          size="sm"
+          onClick={onToggleFeed}
+          leftIcon={<MessageSquareText className="w-4 h-4" />}
+        >
+          {_t("Feed")}
+        </Button>
+      )}
     </header>
   );
 }

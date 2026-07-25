@@ -5,6 +5,7 @@ import { useHistoryStats } from "@/hooks/useHistoryStats";
 import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { PageLayout } from "@/components/layout/PageLayout";
 import { LoadingBlock } from "@/components/ui/StatusBlock";
 import { TrendSparkline } from "@/components/charts/Sparkline";
 import { fmtNum, fmtCurrency, fmtDate, truncateModel } from "@/lib/format";
@@ -29,17 +30,11 @@ export function HistoryView() {
     : hs.series?.[granularity] || [];
 
   return (
-    <div>
-      <div className="flex flex-col gap-4 mb-6 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h2 className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
-            {_t("Historical Proxy Compression")}
-          </h2>
-          <div className="text-xs" style={{ color: "var(--color-text-muted)" }}>
-            {_t("Durable local savings history")}
-          </div>
-        </div>
-        <div className="flex gap-2">
+    <PageLayout
+      title={_t("History")}
+      description={_t("Durable local savings history with trend analysis and checkpoints")}
+    >
+      <div className="flex items-center gap-2 mb-6">
           {[
             ["JSON", "json"],
             ["CSV", "csv"],
@@ -69,7 +64,6 @@ export function HistoryView() {
             </Button>
           ))}
         </div>
-      </div>
 
       {/* Summary */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
@@ -159,6 +153,6 @@ export function HistoryView() {
           </Card>
         </>
       )}
-    </div>
+    </PageLayout>
   );
 }

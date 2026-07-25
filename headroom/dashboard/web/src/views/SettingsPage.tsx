@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Sun, Moon } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";
+import { useHealth } from "@/hooks/useStats";
+import { PageLayout } from "@/components/layout/PageLayout";
 import { Card } from "@/components/ui/Card";
-import { Tabs, Tab, TabList, TabPanel, Select, Switch, Button, Tag } from "@spark-ui/components";
+import { Tabs, Tab, TabList, Select, Switch, Button } from "@spark-ui/components";
 
 interface SettingsField {
   key: string;
@@ -32,7 +33,8 @@ interface SettingsSchema {
 }
 
 export function SettingsPage() {
-  const { lang, setLang, toggleTheme } = useAppContext();
+  const { lang } = useAppContext();
+  const { data: health } = useHealth();
   const _t = (k: string) => t(k, lang);
 
   const [loaded, setLoaded] = useState(false);
@@ -195,54 +197,17 @@ export function SettingsPage() {
     }
   };
 
-  const langOptions = [
-    { value: "en", label: "EN" },
-    { value: "zh", label: "中文" },
-  ];
-
   return (
-    <div className="max-w-3xl mx-auto">
-      {/* Header */}
-      <div
-        className="glass-header sticky top-0 z-40 px-5 py-3 -mx-4 md:-mx-6 mb-6"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" style={{ color: "var(--color-accent)" }}>
-              <rect x="3" y="4" width="4" height="16" rx="1.5" fill="currentColor" opacity="0.9" />
-              <rect x="9" y="7" width="4" height="10" rx="1.5" fill="currentColor" opacity="0.65" />
-              <rect x="15" y="2" width="4" height="20" rx="1.5" fill="currentColor" opacity="0.4" />
-            </svg>
-            <h1 className="text-lg font-bold tracking-tight">HEADROOM</h1>
-            <Tag variant="muted" size="sm">{_t("Settings")}</Tag>
-          </div>
-          <div className="flex items-center gap-3">
-            <Select
-              options={langOptions}
-              value={lang}
-              onChange={(v) => setLang(v as "en" | "zh")}
-              size="sm"
-            />
-            <a href="/dashboard" className="text-sm" style={{ color: "var(--color-accent)" }}>
-              &larr; {_t("Dashboard")}
-            </a>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleTheme}
-              aria-label={_t("Toggle light/dark mode")}
-            >
-              <Sun className="w-4 h-4 dark:hidden" />
-              <Moon className="w-4 h-4 hidden dark:block" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <h2 className="text-xl font-bold mb-1">{_t("Settings")}</h2>
-      <p className="text-sm mb-6" style={{ color: "var(--color-text-secondary)" }}>
-        {_t("Configure Headroom runtime knobs. Changes need a restart to apply.")}
-      </p>
+    <PageLayout
+      title={_t("Settings")}
+      description={_t("Configure Headroom runtime knobs. Changes need a restart to apply.")}
+      headerExtra={
+        <p className="text-xs mt-1" style={{ color: "var(--color-text-muted)" }}>
+          {_t("Version")}: {health?.version || "—"}
+        </p>
+      }
+      className="max-w-3xl"
+    >
 
       {/* Load error */}
       {loadError && (
@@ -396,6 +361,6 @@ export function SettingsPage() {
           </div>
         </form>
       )}
-    </div>
+    </PageLayout>
   );
 }

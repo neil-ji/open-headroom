@@ -1,15 +1,10 @@
-interface CompressionMeterProps {
-  percentage: number;
-  isActive: boolean;
-}
-
-export function CompressionMeter({ percentage, isActive }: CompressionMeterProps) {
+export function CompressionMeter({ percentage }: { percentage: number }) {
   const pct = Math.min(100, Math.max(0, percentage));
   const circumference = 2 * Math.PI * 23; // r=23
   const offset = circumference - (circumference * pct) / 100;
 
   return (
-    <div className={`relative inline-flex items-center justify-center ${isActive ? "meter-pulse" : ""}`}>
+    <div className="relative inline-flex items-center justify-center">
       <svg
         width="56"
         height="56"
@@ -31,28 +26,13 @@ export function CompressionMeter({ percentage, isActive }: CompressionMeterProps
           stroke="var(--color-border)"
           strokeWidth="6"
         />
-        {/* Glow ring */}
-        <circle
-          cx="28" cy="28" r="23"
-          fill="none"
-          stroke="var(--color-accent)"
-          strokeWidth="12"
-          strokeLinecap="round"
-          opacity={isActive ? undefined : 0.15}
-          style={{
-            strokeDasharray: circumference,
-            strokeDashoffset: offset,
-            transition: "stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
-            filter: "blur(4px)",
-          }}
-        />
-        {/* Fill ring */}
+        {/* Fill ring — sharp, no blur */}
         <circle
           cx="28" cy="28" r="23"
           fill="none"
           stroke="url(#meterGradient)"
           strokeWidth="6"
-          strokeLinecap="round"
+          strokeLinecap="butt"
           style={{
             strokeDasharray: circumference,
             strokeDashoffset: offset,

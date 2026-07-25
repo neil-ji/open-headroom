@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { PageLayout } from "@/components/layout/PageLayout";
 import { KpiBar } from "@/components/kpi/KpiBar";
 import { Card, CardInner } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -78,10 +79,10 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
   const agentRows = stats.agent_usage?.agents || [];
 
   return (
-    <div>
-      <p className="mb-5 text-xs" style={{ color: "var(--color-text-muted)" }}>
-        {_t("Current proxy process · runtime counters reset on restart")}
-      </p>
+    <PageLayout
+      title={_t("Session")}
+      description={_t("Real-time proxy compression metrics · runtime counters reset on restart")}
+    >
 
       {/* ── Hero KPI Bar ── */}
       <KpiBar stats={stats} />
@@ -746,6 +747,6 @@ export function SessionView({ stats, savingsHistory }: SessionViewProps) {
         )}
         </div>{/* /overflow-x-auto */}
       </Card>
-    </div>
+    </PageLayout>
   );
 }

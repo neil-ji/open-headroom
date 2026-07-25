@@ -22,7 +22,6 @@ export function KpiBar({ stats }: KpiBarProps) {
   const outputPct = stats.tokens?.output_reduction_percent ?? 0;
   const throughput = stats.throughput?.rolling?.input_wall_clock ?? 0;
   const fwdThroughput = stats.throughput?.rolling?.forward_p50 ?? 0;
-  const isActive = totalTokens > 0;
 
   return (
     <div
@@ -30,12 +29,11 @@ export function KpiBar({ stats }: KpiBarProps) {
       style={{
         background: "var(--color-surface)",
         border: "1px solid var(--color-border)",
-        boxShadow: "var(--shadow-card)",
       }}
     >
       {/* Compression Meter */}
       <div className="flex items-center gap-3 col-span-2 md:col-span-1">
-        <CompressionMeter percentage={savingsPct} isActive={isActive} />
+        <CompressionMeter percentage={savingsPct} />
         <div>
           <StatLabel>{_t("Token Savings")}</StatLabel>
           <div

@@ -5,6 +5,7 @@ const zh: Record<string, string> = {
   // Header & nav
   Session: "会话",
   Lifetime: "累计",
+  History: "历史",
   Historical: "历史",
   Language: "语言",
   "Anon Telemetry": "匿名遥测",
@@ -13,7 +14,9 @@ const zh: Record<string, string> = {
   Error: "异常",
   Updated: "更新于",
   Settings: "设置",
+  Dashboard: "控制台",
   "Live Feed": "实时流",
+  Feed: "实时流",
   "Toggle light/dark mode": "切换明暗主题",
   "Anonymous aggregate telemetry is enabled. Disable with HEADROOM_TELEMETRY=off or --no-telemetry.":
     "匿名聚合遥测已启用。使用 HEADROOM_TELEMETRY=off 或 --no-telemetry 禁用。",
@@ -122,6 +125,7 @@ const zh: Record<string, string> = {
   // Lifetime
   "Lifetime data since": "累计数据自",
   "Full metric coverage since": "完整指标覆盖自",
+  "Cumulative savings across all sessions since": "自运行以来的累计节省",
   "Per-Project Savings": "按项目节省",
   "No per-project data yet.": "暂无项目数据。",
   Project: "项目",
@@ -158,6 +162,7 @@ const zh: Record<string, string> = {
   "No persisted savings history yet": "尚无持久化节省历史",
   "Loading history…": "加载历史…",
   "Durable local savings history": "持久化本地节省历史",
+  "Durable local savings history with trend analysis and checkpoints": "持久化本地节省历史，含趋势分析与检查点",
   "Lifetime Compression Savings": "累计压缩节省",
   "Lifetime Tokens Saved": "累计 Token 节省",
   "Active Days": "活跃天数",
@@ -178,6 +183,7 @@ const zh: Record<string, string> = {
     "历史数据在代理请求节省 Token 后写入本地。继续使用 Headroom，此视图将随重启自动填充。",
 
   // Settings
+  Version: "版本",
   Advanced: "高级",
   Dashboard: "控制台",
   Save: "保存",
@@ -212,6 +218,7 @@ const zh: Record<string, string> = {
   // SessionView
   "Loading session stats…": "加载会话统计…",
   "Current proxy process · runtime counters reset on restart": "当前代理进程 · 运行时计数器在重启时重置",
+  "Real-time proxy compression metrics · runtime counters reset on restart": "实时代理压缩指标 · 计数器重启时重置",
   "calls · tool schemas deferred": "次调用 · 工具模式已延迟",
   "No waste signals detected yet. Data appears after requests are processed.":
     "尚未检测到废弃物信号。处理请求后数据将出现。",
