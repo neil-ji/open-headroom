@@ -4,6 +4,7 @@ import { Sun, Moon, MessageSquareText, SettingsIcon } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";
 import { useHealth } from "@/hooks/useStats";
+import { Select, Button, Tag } from "@spark-ui/components";
 
 export function Header({
   version,
@@ -36,6 +37,11 @@ export function Header({
     return () => clearInterval(id);
   }, [lastUpdated]);
 
+  const langOptions = [
+    { value: "en", label: "EN" },
+    { value: "zh", label: "中文" },
+  ];
+
   return (
     <header className="glass-header sticky top-0 z-40 px-5 py-3">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -56,20 +62,14 @@ export function Header({
               HEADROOM
             </h1>
           </div>
-          <span
-            className="text-xs font-mono px-2 py-0.5 rounded-full"
-            style={{
-              color: "var(--color-text-muted)",
-              background: "var(--color-surface-alt)",
-            }}
-          >
+          <Tag variant="muted" size="sm">
             {version ? `v${version}` : _t("loading")}
-          </span>
+          </Tag>
         </div>
 
         {/* Right: controls */}
         <div className="flex flex-col gap-2.5 md:flex-row md:items-center md:gap-4">
-          {/* View tabs */}
+          {/* View tabs (keep as NavLinks — they navigate routes) */}
           <div
             className="inline-flex rounded-[10px] p-0.5 gap-0.5"
             style={{
@@ -128,20 +128,13 @@ export function Header({
           ) : null}
 
           {/* Lang switcher */}
-          <select
+          <Select
+            options={langOptions}
             value={lang}
-            onChange={(e) => setLang(e.target.value as "en" | "zh")}
-            className="text-xs rounded-md px-2 py-2.5 focus:outline-none"
+            onChange={(v) => setLang(v as "en" | "zh")}
+            size="sm"
             aria-label={_t("Language")}
-            style={{
-              color: "var(--color-text-secondary)",
-              background: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
-            }}
-          >
-            <option value="en">EN</option>
-            <option value="zh">中文</option>
-          </select>
+          />
 
           {/* Settings */}
           <NavLink
@@ -154,34 +147,26 @@ export function Header({
           </NavLink>
 
           {/* Theme toggle */}
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onToggleTheme}
-            className="p-2.5 rounded-md transition-colors"
-            style={{ color: "var(--color-text-secondary)" }}
             aria-label={_t("Toggle light/dark mode")}
           >
             <Sun className="w-5 h-5 dark:hidden" />
             <Moon className="w-5 h-5 hidden dark:block" />
-          </button>
+          </Button>
 
           {/* Live Feed */}
           {logFullMessages && (
-            <button
+            <Button
+              variant={feedOpen ? "primary" : "secondary"}
+              size="sm"
               onClick={onToggleFeed}
-              className="px-3 py-2.5 text-sm rounded-md transition-all font-medium"
-              style={
-                feedOpen
-                  ? { background: "var(--color-accent)", color: "#fff" }
-                  : {
-                      color: "var(--color-text-secondary)",
-                      background: "var(--color-surface)",
-                      border: "1px solid var(--color-border)",
-                    }
-              }
+              leftIcon={<MessageSquareText className="w-4 h-4" />}
             >
-              <MessageSquareText className="w-4 h-4 inline mr-1.5" />
               {_t("Live Feed")}
-            </button>
+            </Button>
           )}
         </div>
       </div>

@@ -4,7 +4,7 @@ import { Card, CardInner } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { LoadingBlock, ErrorBlock } from "@/components/ui/StatusBlock";
+import { LoadingBlock } from "@/components/ui/StatusBlock";
 import { Sparkline, TrendSparkline } from "@/components/charts/Sparkline";
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";

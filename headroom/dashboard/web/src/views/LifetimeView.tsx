@@ -4,7 +4,7 @@ import { useLifetimeStats } from "@/hooks/useLifetimeStats";
 import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { LoadingBlock, ErrorBlock } from "@/components/ui/StatusBlock";
+import { LoadingBlock } from "@/components/ui/StatusBlock";
 import { fmtNum, fmtCurrency } from "@/lib/format";
 
 export function LifetimeView() {

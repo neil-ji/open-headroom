@@ -1,125 +1,141 @@
 @import "tailwindcss";
+@import "@spark-ui/components/tokens.css";
+@import "@spark-ui/components/styles.css";
 
-/* ── Design Tokens: Precision Instrument ── */
+/* ═══════════════════════════════════════════════════════════════════
+ * Token Bridge — Map Headroom --color-* aliases to spark-ui tokens.
+ * spark-ui tokens.css defines the native palette (--bg, --surface,
+ * --text, --spark, etc.) for both light and dark.
+ * We only add --color-* aliases so existing dashboard code works.
+ * ═══════════════════════════════════════════════════════════════════ */
+
 :root {
-  --color-bg: #F5F3EF;
-  --color-surface: #FFFFFF;
-  --color-surface-alt: #FAF9F6;
-  --color-border: #E8E4DC;
-  --color-border-light: #F0EDE7;
-  --color-text: #1E1B18;
-  --color-text-secondary: #5C5853;
-  --color-text-muted: #78746D;
-  --color-accent: #C86E2C;
-  --color-accent-soft: rgba(200, 110, 44, 0.08);
-  --color-accent-glow: rgba(200, 110, 44, 0.20);
-  --color-positive: #3D8B7E;
-  --color-positive-soft: rgba(61, 139, 126, 0.10);
-  --color-negative: #C44E4E;
-  --color-negative-soft: rgba(196, 78, 78, 0.10);
-  --color-warning: #C88A2C;
-  --color-warning-soft: rgba(200, 138, 44, 0.10);
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(0, 0, 0, 0.06);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  /* ── Core aliases → spark-ui tokens ── */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-raised);
+  --color-border: var(--border);
+  --color-border-light: var(--muted);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-disabled);
+  --color-accent: var(--spark);
+  --color-accent-soft: var(--spark-soft);
+  --color-accent-glow: rgba(var(--spark-rgb), 0.20);
+  --color-positive: var(--success);
+  --color-positive-soft: var(--success-soft);
+  --color-negative: var(--danger);
+  --color-negative-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
 
-  /* ── Semantic waste-signal colors ── */
-  --color-waste-json:      #C88A2C;
-  --color-waste-html:      #C86E2C;
-  --color-waste-base64:    #C44E4E;
-  --color-waste-whitespace: #4A7DB5;
-  --color-waste-date:      #8B6FAD;
-  --color-waste-repetition: #C44E8B;
-  --color-waste-reread:    #2E8B7E;
-  --color-waste-reread-compressed: #C44E5E;
+  /* ── Glass — semi-transparent surface ── */
+  --glass-bg: color-mix(in srgb, var(--surface) 72%, transparent);
+  --glass-border: color-mix(in srgb, var(--text) 6%, transparent);
 
-  /* ── Semantic agent colors ── */
-  --color-agent-claude:    #C86E2C;
-  --color-agent-codex:     #3D8B7E;
-  --color-agent-cursor:    #2E8B8B;
-  --color-agent-copilot:   #8B6FAD;
-  --color-agent-openai:    #4A7DB5;
-  --color-agent-gemini:    #C44E5E;
-  --color-agent-aider:     #C8A02C;
-  --color-agent-default:   #78746D;
+  /* ── Shadow alias ── */
+  --shadow-card: var(--shadow-md);
+
+  /* ═══════════════════════════════════════════════════════════════
+   * Dashboard-specific semantic tokens
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* ── Waste-signal colors (distinct hues for different waste types) ── */
+  --color-waste-json:      var(--warning);
+  --color-waste-html:      var(--spark);
+  --color-waste-base64:    var(--danger);
+  --color-waste-whitespace: var(--info);
+  --color-waste-date:      var(--purple);
+  --color-waste-repetition: var(--rose);
+  --color-waste-reread:    var(--teal);
+  --color-waste-reread-compressed: var(--danger);
+
+  /* ── Agent brand colors ── */
+  --color-agent-claude:    var(--spark);
+  --color-agent-codex:     var(--teal);
+  --color-agent-cursor:    var(--teal);
+  --color-agent-copilot:   var(--purple);
+  --color-agent-openai:    var(--info);
+  --color-agent-gemini:    var(--rose);
+  --color-agent-aider:     var(--warning);
+  --color-agent-default:   var(--slate);
 
   /* ── Throughput / pipeline colors ── */
-  --color-throughput-forward: #2E8B8B;
-  --color-pipeline-slow:   #C88A2C;
-  --color-pipeline-medium: #A8902C;
+  --color-throughput-forward: var(--teal);
+  --color-pipeline-slow:   var(--warning);
+  --color-pipeline-medium:  color-mix(in srgb, var(--warning) 60%, var(--success) 40%);
 
-  /* ── Live Feed diff panels ── */
-  --diff-before-header: #FDF0F0;
-  --diff-before-body:   #FFF5F5;
-  --diff-after-header:  #EDF7F4;
-  --diff-after-body:    #F5FAF8;
-  --diff-before-border: rgba(196, 78, 78, 0.25);
-  --diff-after-border:  rgba(61, 139, 126, 0.25);
+  /* ── Live Feed diff panels (before → danger tints, after → success tints) ── */
+  --diff-before-header: color-mix(in srgb, var(--danger) 12%, var(--surface));
+  --diff-before-body:   color-mix(in srgb, var(--danger) 6%, var(--surface));
+  --diff-after-header:  color-mix(in srgb, var(--success) 12%, var(--surface));
+  --diff-after-body:    color-mix(in srgb, var(--success) 6%, var(--surface));
+  --diff-before-border: color-mix(in srgb, var(--danger) 25%, transparent);
+  --diff-after-border:  color-mix(in srgb, var(--success) 25%, transparent);
 }
 
+/* ── Dark Theme — map --color-* aliases to spark-ui dark tokens ── */
 html.dark {
-  --color-bg: #141310;
-  --color-surface: #1C1A16;
-  --color-surface-alt: #22201B;
-  --color-border: #2D2A24;
-  --color-border-light: #35322B;
-  --color-text: #EBE7DE;
-  --color-text-secondary: #9D9890;
-  --color-text-muted: #7D7870;
-  --color-accent: #E8A048;
-  --color-accent-soft: rgba(232, 160, 72, 0.10);
-  --color-accent-glow: rgba(232, 160, 72, 0.18);
-  --color-positive: #5BAF9D;
-  --color-positive-soft: rgba(91, 175, 157, 0.10);
-  --color-negative: #D4695A;
-  --color-negative-soft: rgba(212, 105, 90, 0.10);
-  --color-warning: #E0A840;
-  --color-warning-soft: rgba(224, 168, 64, 0.10);
-  --glass-bg: rgba(28, 26, 22, 0.78);
-  --glass-border: rgba(255, 255, 255, 0.06);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.15);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.15);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-raised);
+  --color-border: var(--border);
+  --color-border-light: var(--muted);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-disabled);
+  --color-accent: var(--spark);
+  --color-accent-soft: var(--spark-soft);
+  --color-accent-glow: rgba(var(--spark-rgb), 0.18);
+  --color-positive: var(--success);
+  --color-positive-soft: var(--success-soft);
+  --color-negative: var(--danger);
+  --color-negative-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
 
-  /* ── Semantic waste-signal colors (dark) ── */
-  --color-waste-json:      #E0A840;
-  --color-waste-html:      #E8A048;
-  --color-waste-base64:    #D4695A;
-  --color-waste-whitespace: #6BA5D6;
-  --color-waste-date:      #A890D0;
-  --color-waste-repetition: #D46998;
-  --color-waste-reread:    #5BAF9D;
-  --color-waste-reread-compressed: #D4806A;
+  --glass-bg: color-mix(in srgb, var(--surface) 78%, transparent);
+  --glass-border: color-mix(in srgb, var(--text) 6%, transparent);
+  --shadow-card: var(--shadow-md);
 
-  /* ── Semantic agent colors (dark) ── */
-  --color-agent-claude:    #E8A048;
-  --color-agent-codex:     #5BAF9D;
-  --color-agent-cursor:    #4AB8B8;
-  --color-agent-copilot:   #A890D0;
-  --color-agent-openai:    #6BA5D6;
-  --color-agent-gemini:    #D4806A;
-  --color-agent-aider:     #E0C040;
-  --color-agent-default:   #9D9890;
+  /* Waste-signal colors (dark) */
+  --color-waste-json:      var(--warning);
+  --color-waste-html:      var(--spark);
+  --color-waste-base64:    var(--danger);
+  --color-waste-whitespace: var(--info);
+  --color-waste-date:      var(--purple);
+  --color-waste-repetition: var(--rose);
+  --color-waste-reread:    var(--teal);
+  --color-waste-reread-compressed: var(--danger);
 
-  /* ── Throughput / pipeline colors (dark) ── */
-  --color-throughput-forward: #4AB8B8;
-  --color-pipeline-slow:   #E0A840;
-  --color-pipeline-medium: #C0A830;
+  /* Agent brand colors (dark) */
+  --color-agent-claude:    var(--spark);
+  --color-agent-codex:     var(--teal);
+  --color-agent-cursor:    var(--teal);
+  --color-agent-copilot:   var(--purple);
+  --color-agent-openai:    var(--info);
+  --color-agent-gemini:    var(--rose);
+  --color-agent-aider:     var(--warning);
+  --color-agent-default:   var(--slate);
 
-  /* ── Live Feed diff panels (dark) ── */
-  --diff-before-header: #1A0A0A;
-  --diff-before-body:   #140808;
-  --diff-after-header:  #0A1A14;
-  --diff-after-body:    #081410;
-  --diff-before-border: rgba(212, 105, 90, 0.25);
-  --diff-after-border:  rgba(91, 175, 157, 0.25);
+  /* Throughput / pipeline colors (dark) */
+  --color-throughput-forward: var(--teal);
+  --color-pipeline-slow:   var(--warning);
+  --color-pipeline-medium:  color-mix(in srgb, var(--warning) 60%, var(--success) 40%);
+
+  /* Live Feed diff panels (dark) */
+  --diff-before-header: color-mix(in srgb, var(--danger) 16%, var(--surface));
+  --diff-before-body:   color-mix(in srgb, var(--danger) 8%, var(--surface));
+  --diff-after-header:  color-mix(in srgb, var(--success) 16%, var(--surface));
+  --diff-after-body:    color-mix(in srgb, var(--success) 8%, var(--surface));
+  --diff-before-border: color-mix(in srgb, var(--danger) 25%, transparent);
+  --diff-after-border:  color-mix(in srgb, var(--success) 25%, transparent);
 }
 
-/* ── Base ── */
+/* ═══════════════════════════════════════════════════════════════════
+ * Base Styles
+ * ═══════════════════════════════════════════════════════════════════ */
+
 body {
   margin: 0;
   background: var(--color-bg);
@@ -134,7 +150,7 @@ body {
 code,
 pre,
 .tabular-nums {
-  font-family: "JetBrains Mono", ui-monospace, SF Mono, monospace !important;
+  font-family: "JetBrains Mono", ui-monospace, SF Mono, Menlo, Consolas, monospace !important;
 }
 
 /* ── Glass header ── */

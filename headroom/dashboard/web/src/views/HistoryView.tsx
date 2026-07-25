@@ -5,9 +5,10 @@ import { useHistoryStats } from "@/hooks/useHistoryStats";
 import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { LoadingBlock, ErrorBlock } from "@/components/ui/StatusBlock";
+import { LoadingBlock } from "@/components/ui/StatusBlock";
 import { TrendSparkline } from "@/components/charts/Sparkline";
 import { fmtNum, fmtCurrency, fmtDate, truncateModel } from "@/lib/format";
+import { Tabs, Tab, TabList, Button } from "@spark-ui/components";
 
 type Granularity = "daily" | "weekly" | "monthly" | "history";
 
@@ -43,11 +44,11 @@ export function HistoryView() {
             ["JSON", "json"],
             ["CSV", "csv"],
           ].map(([label, fmt]) => (
-            <button
+            <Button
               key={fmt}
+              variant="secondary"
+              size="sm"
               disabled={exporting !== null}
-              className="px-3 py-1.5 text-sm rounded-md border transition-colors disabled:opacity-50"
-              style={{ color: "var(--color-text-secondary)", borderColor: "var(--color-border)", background: "var(--color-surface)" }}
               onClick={async () => {
                 setExporting(fmt);
                 try {
@@ -65,7 +66,7 @@ export function HistoryView() {
               }}
             >
               {exporting === fmt ? _t("Exporting…") : _t(`Export ${label}`)}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -97,28 +98,15 @@ export function HistoryView() {
         </Card>
       ) : (
         <>
-          {/* Granularity tabs */}
-          <div className="flex gap-1 mb-4">
-            {([
-              ["Daily", "daily"],
-              ["Weekly", "weekly"],
-              ["Monthly", "monthly"],
-              ["Checkpoints", "history"],
-            ] as const).map(([label, key]) => (
-              <button
-                key={key}
-                onClick={() => setGranularity(key)}
-                className="px-3 py-1.5 text-sm rounded-md transition-colors font-medium"
-                style={
-                  granularity === key
-                    ? { background: "var(--color-accent)", color: "#fff" }
-                    : { color: "var(--color-text-secondary)" }
-                }
-              >
-                {_t(label)}
-              </button>
-            ))}
-          </div>
+          {/* Granularity tabs — using spark-ui Tabs */}
+          <Tabs value={granularity} onChange={(v) => setGranularity(v as Granularity)} className="mb-4">
+            <TabList>
+              <Tab value="daily">{_t("Daily")}</Tab>
+              <Tab value="weekly">{_t("Weekly")}</Tab>
+              <Tab value="monthly">{_t("Monthly")}</Tab>
+              <Tab value="history">{_t("Checkpoints")}</Tab>
+            </TabList>
+          </Tabs>
 
           {/* Trend chart */}
           <SectionHeader label={_t("Historical Savings Trend")} />

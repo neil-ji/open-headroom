@@ -1,4 +1,4 @@
-import { Spinner } from "./Spinner";
+import { Skeleton, Alert, Button } from "@spark-ui/components";
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";
 
@@ -6,15 +6,13 @@ export function LoadingBlock({ message }: { message?: string }) {
   const { lang } = useAppContext();
   const _t = (k: string) => t(k, lang);
   return (
-    <div
-      className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-12"
-      style={{
-        borderColor: "var(--color-border)",
-        color: "var(--color-text-muted)",
-      }}
-    >
-      <Spinner size={28} />
-      <p className="text-sm">{message || _t("loading")}</p>
+    <div className="flex flex-col gap-4 p-6">
+      <Skeleton variant="card" height="120px" />
+      <Skeleton variant="text" width="60%" />
+      <Skeleton variant="text" width="40%" />
+      <p className="text-sm text-center" style={{ color: "var(--color-text-muted)" }}>
+        {message || _t("loading")}
+      </p>
     </div>
   );
 }
@@ -29,29 +27,12 @@ export function ErrorBlock({
   const { lang } = useAppContext();
   const _t = (k: string) => t(k, lang);
   return (
-    <div
-      className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-12"
-      style={{
-        borderColor: "var(--color-negative)",
-        color: "var(--color-text-muted)",
-      }}
-    >
-      <p className="text-sm" style={{ color: "var(--color-negative)" }}>
-        {message}
-      </p>
+    <Alert variant="danger" title={message}>
       {onRetry && (
-        <button
-          onClick={onRetry}
-          className="px-4 py-2 rounded-md text-sm font-medium transition-colors"
-          style={{
-            background: "var(--color-surface-alt)",
-            color: "var(--color-text)",
-            border: "1px solid var(--color-border)",
-          }}
-        >
+        <Button variant="secondary" size="sm" onClick={onRetry} className="mt-2">
           {_t("Retry")}
-        </button>
+        </Button>
       )}
-    </div>
+    </Alert>
   );
 }

@@ -23,18 +23,27 @@ function getInitialLang(): Language {
   return saved === "zh" ? "zh" : "en";
 }
 
+/**
+ * Apply theme to both Tailwind (html.dark class) and spark-ui (data-theme attr).
+ */
+function applyTheme(theme: Theme) {
+  const root = document.documentElement;
+  if (theme === "dark") {
+    root.classList.add("dark");
+    root.setAttribute("data-theme", "dark");
+  } else {
+    root.classList.remove("dark");
+    root.setAttribute("data-theme", "light");
+  }
+  localStorage.setItem("headroom-theme", theme);
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [lang, setLangState] = useState<Language>(getInitialLang);
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-    localStorage.setItem("headroom-theme", theme);
+    applyTheme(theme);
   }, [theme]);
 
   const toggleTheme = useCallback(() => {

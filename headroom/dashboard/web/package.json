@@ -9,9 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chenglou/pretext": "^0.0.8",
+    "@spark-ui/components": "file:.yalc/@spark-ui/components",
     "@tanstack/react-query": "^5.62.0",
+    "@tanstack/react-virtual": "^3.14.8",
     "clsx": "^2.1.1",
     "lucide-react": "^0.460.0",
+    "marked": "^18.0.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.0.0",

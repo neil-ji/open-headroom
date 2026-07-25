@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
+import { useRef } from "react";
+import { Drawer } from "@spark-ui/components";
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";
 import type { Transformation } from "@/types/api";
@@ -88,52 +88,32 @@ export function LiveFeedDrawer({ open, onClose, transformations }: LiveFeedDrawe
   const { lang } = useAppContext();
   const _t = (k: string) => t(k, lang);
 
-  if (!open) return null;
+  const count = `${transformations.length} ${_t("msgs")}`;
 
   return (
-    <div
-      className="fixed top-0 right-0 h-full w-[min(520px,100vw)] z-50 flex flex-col shadow-2xl"
-      style={{
-        background: "var(--color-surface)",
-        borderLeft: "1px solid var(--color-border)",
-      }}
+    <Drawer
+      open={open}
+      onClose={onClose}
+      title={_t("Message Transformations")}
+      placement="right"
+      width={Math.min(520, typeof window !== "undefined" ? window.innerWidth : 520)}
     >
-      {/* Header */}
-      <div
-        className="flex items-center justify-between px-4 py-3"
-        style={{ borderBottom: "1px solid var(--color-border)" }}
-      >
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
-            {_t("Message Transformations")}
-          </span>
-          <span
-            className="text-xs font-mono"
-            style={{ color: "var(--color-text-muted)" }}
-          >
-            {transformations.length} {_t("msgs")}
-          </span>
-        </div>
-        <button
-          onClick={onClose}
-          className="p-2.5 rounded transition-colors"
-          style={{ color: "var(--color-text-muted)" }}
-          aria-label={_t("Close feed")}
-        >
-          <X className="w-5 h-5" />
-        </button>
-      </div>
-
-      {/* Content */}
-      <div ref={containerRef} className="flex-1 overflow-y-auto">
+      <div ref={containerRef} className="h-full overflow-y-auto">
         {transformations.length === 0 ? (
           <div className="p-8 text-center text-sm" style={{ color: "var(--color-text-muted)" }}>
             {_t("No transformations yet.")}
           </div>
         ) : (
-          transformations.map((t, i) => <TransformationCard key={i} tr={t} />)
+          <>
+            <div className="px-4 py-2 text-xs" style={{ color: "var(--color-text-muted)" }}>
+              {count}
+            </div>
+            {transformations.map((tr, i) => (
+              <TransformationCard key={i} tr={tr} />
+            ))}
+          </>
         )}
       </div>
-    </div>
+    </Drawer>
   );
 }

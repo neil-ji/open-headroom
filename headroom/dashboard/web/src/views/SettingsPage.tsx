@@ -3,6 +3,7 @@ import { Sun, Moon } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";
 import { Card } from "@/components/ui/Card";
+import { Tabs, Tab, TabList, TabPanel, Select, Switch, Button, Tag } from "@spark-ui/components";
 
 interface SettingsField {
   key: string;
@@ -164,7 +165,6 @@ export function SettingsPage() {
       if (data.restarted && data.mode === "service") {
         setBanner(_t("Restarting…"));
         setStatus(_t("Waiting for the proxy to come back…"));
-        // Poll health
         for (let i = 0; i < 40; i++) {
           await new Promise((r) => setTimeout(r, 1500));
           try {
@@ -195,6 +195,11 @@ export function SettingsPage() {
     }
   };
 
+  const langOptions = [
+    { value: "en", label: "EN" },
+    { value: "zh", label: "中文" },
+  ];
+
   return (
     <div className="max-w-3xl mx-auto">
       {/* Header */}
@@ -209,32 +214,27 @@ export function SettingsPage() {
               <rect x="15" y="2" width="4" height="20" rx="1.5" fill="currentColor" opacity="0.4" />
             </svg>
             <h1 className="text-lg font-bold tracking-tight">HEADROOM</h1>
-            <span className="text-xs font-mono px-2 py-0.5 rounded-full" style={{ color: "var(--color-text-muted)", background: "var(--color-surface-alt)" }}>
-              {_t("Settings")}
-            </span>
+            <Tag variant="muted" size="sm">{_t("Settings")}</Tag>
           </div>
           <div className="flex items-center gap-3">
-            <select
+            <Select
+              options={langOptions}
               value={lang}
-              onChange={(e) => setLang(e.target.value as "en" | "zh")}
-              className="text-xs rounded-md px-2 py-1.5 focus:outline-none"
-              style={{ color: "var(--color-text-secondary)", background: "var(--color-surface)", border: "1px solid var(--color-border)" }}
-            >
-              <option value="en">EN</option>
-              <option value="zh">中文</option>
-            </select>
+              onChange={(v) => setLang(v as "en" | "zh")}
+              size="sm"
+            />
             <a href="/dashboard" className="text-sm" style={{ color: "var(--color-accent)" }}>
               &larr; {_t("Dashboard")}
             </a>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={toggleTheme}
-              className="p-1.5 rounded-md transition-colors"
-              style={{ color: "var(--color-text-secondary)" }}
               aria-label={_t("Toggle light/dark mode")}
             >
               <Sun className="w-4 h-4 dark:hidden" />
               <Moon className="w-4 h-4 hidden dark:block" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -271,27 +271,13 @@ export function SettingsPage() {
         </Card>
       )}
 
-      {/* Tab pills */}
-      <div className="flex items-center gap-1 mb-6 p-1 rounded-lg" style={{ background: "var(--color-surface-alt)", border: "1px solid var(--color-border)" }}>
-        {[
-          ["basic", _t("Settings")],
-          ["advanced", _t("Advanced")],
-        ].map(([tab, label]) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            className="px-3 py-1.5 text-sm rounded-md transition-colors font-medium"
-            style={
-              activeTab === tab
-                ? { background: "var(--color-accent)", color: "#fff" }
-                : { color: "var(--color-text-secondary)" }
-            }
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      {/* Tab pills — using spark-ui Tabs */}
+      <Tabs value={activeTab} onChange={setActiveTab} className="mb-6">
+        <TabList>
+          <Tab value="basic">{_t("Settings")}</Tab>
+          <Tab value="advanced">{_t("Advanced")}</Tab>
+        </TabList>
+      </Tabs>
 
       {/* Form */}
       {loaded && (
@@ -308,26 +294,20 @@ export function SettingsPage() {
                     <label className="flex items-center justify-between gap-4">
                       <span className="text-sm font-medium">{field.label}</span>
                       {field.type === "bool" ? (
-                        <input
-                          type="checkbox"
-                          className="h-5 w-5"
-                          style={{ accentColor: "var(--color-accent)" }}
-                          disabled={isLocked(field)}
+                        <Switch
                           checked={!!values[field.key]}
-                          onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.checked }))}
+                          onChange={(checked) => setValues((v) => ({ ...v, [field.key]: checked }))}
+                          disabled={isLocked(field)}
+                          size="sm"
                         />
                       ) : field.type === "enum" ? (
-                        <select
-                          className="rounded px-2 py-1 text-sm w-full sm:w-56"
-                          style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-text)" }}
-                          disabled={isLocked(field)}
+                        <Select
+                          options={(field.choices || []).map((c) => ({ value: c, label: c }))}
                           value={String(values[field.key] || "")}
-                          onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
-                        >
-                          {(field.choices || []).map((c) => (
-                            <option key={c} value={c}>{c}</option>
-                          ))}
-                        </select>
+                          onChange={(v) => setValues((v2) => ({ ...v2, [field.key]: v }))}
+                          disabled={isLocked(field)}
+                          size="sm"
+                        />
                       ) : field.type === "int" || field.type === "float" ? (
                         <input
                           type="number"
@@ -357,9 +337,10 @@ export function SettingsPage() {
                       )}
                     </label>
                     {field.secret && !isLocked(field) && (
-                      <button
-                        type="button"
-                        className="text-xs hover:underline mt-1"
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="mt-1"
                         style={{ color: "var(--color-negative)" }}
                         onClick={() => {
                           setValues((v) => ({ ...v, [field.key]: "" }));
@@ -367,7 +348,7 @@ export function SettingsPage() {
                         }}
                       >
                         {_t("Clear stored value")}
-                      </button>
+                      </Button>
                     )}
                     <p className="text-xs mt-1" style={{ color: "var(--color-text-secondary)" }}>
                       {field.help}
@@ -393,24 +374,22 @@ export function SettingsPage() {
             ))}
 
           <div className="flex items-center gap-3 mt-6">
-            <button
-              type="button"
+            <Button
+              variant="secondary"
+              size="sm"
               disabled={busy}
               onClick={save}
-              className="px-4 py-2 rounded text-sm font-medium disabled:opacity-50 transition-colors"
-              style={{ background: "var(--color-surface-alt)", color: "var(--color-text)", border: "1px solid var(--color-border)" }}
             >
               {_t("Save")}
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
               disabled={busy}
               onClick={applyAndRestart}
-              className="px-4 py-2 rounded text-sm font-medium disabled:opacity-50 transition-colors"
-              style={{ background: "var(--color-accent)", color: "#fff" }}
             >
               {_t("Apply & Restart")}
-            </button>
+            </Button>
             <span className="text-sm" style={{ color: "var(--color-text-secondary)" }}>
               {status}
             </span>

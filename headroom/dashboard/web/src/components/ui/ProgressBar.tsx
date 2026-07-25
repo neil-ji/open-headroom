@@ -1,3 +1,5 @@
+import { Progress } from "@spark-ui/components";
+
 interface ProgressBarProps {
   value: number;
   max?: number;
@@ -5,22 +7,21 @@ interface ProgressBarProps {
   fillColor?: string;
 }
 
+/** Wrapper around spark-ui Progress for backward compatibility.
+ *  Note: spark-ui Progress doesn't support custom fillColor via prop;
+ *  the color is determined by the `status` variant or CSS variable override. */
 export function ProgressBar({
   value,
   max = 100,
   className,
-  fillColor,
 }: ProgressBarProps) {
-  const pct = Math.min(100, Math.max(0, (value / max) * 100));
   return (
-    <div className="progress-bar w-full" style={{ height: 6 }}>
-      <div
-        className="h-full rounded-sm transition-all duration-500"
-        style={{
-          width: `${pct}%`,
-          background: fillColor || "var(--color-accent)",
-        }}
-      />
-    </div>
+    <Progress
+      value={value}
+      max={max}
+      variant="linear"
+      className={className}
+      spark={false}
+    />
   );
 }
