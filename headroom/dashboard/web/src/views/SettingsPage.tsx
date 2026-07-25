@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { t } from "@/i18n/translations";
-import { useHealth } from "@/hooks/useStats";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Card } from "@/components/ui/Card";
 import { Tabs, Tab, TabList, Select, Switch, Button } from "@spark-ui/components";
@@ -34,7 +33,6 @@ interface SettingsSchema {
 
 export function SettingsPage() {
   const { lang } = useAppContext();
-  const { data: health } = useHealth();
   const _t = (k: string) => t(k, lang);
 
   const [loaded, setLoaded] = useState(false);
@@ -201,11 +199,6 @@ export function SettingsPage() {
     <PageLayout
       title={_t("Settings")}
       description={_t("Configure Headroom runtime knobs. Changes need a restart to apply.")}
-      headerExtra={
-        <p className="text-xs mt-1" style={{ color: "var(--color-text-muted)" }}>
-          {_t("Version")}: {health?.version || "—"}
-        </p>
-      }
       className="max-w-3xl"
     >
 

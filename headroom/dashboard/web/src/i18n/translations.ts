@@ -183,7 +183,6 @@ const zh: Record<string, string> = {
     "历史数据在代理请求节省 Token 后写入本地。继续使用 Headroom，此视图将随重启自动填充。",
 
   // Settings
-  Version: "版本",
   Advanced: "高级",
   Dashboard: "控制台",
   Save: "保存",
