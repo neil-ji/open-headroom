@@ -65,6 +65,12 @@ services:
       # Use token mode: compress full message list, no prompt-cache constraint.
       # DeepSeek ignores cache_control, so cache mode is counterproductive.
       - HEADROOM_MODE=token
+      # Disable Kompress ML: the ONNX model takes 1-7s per invocation on large
+      # requests (160K+ tokens), triggering timeout → quarantine → zero compression
+      # for ALL subsequent requests. Structural compressors (JSON/log/search/diff)
+      # are Rust-backed, millisecond-fast, and cover the vast majority of coding
+      # agent tool outputs. Re-enable if the ML model is ported to GPU inference.
+      - HEADROOM_DISABLE_KOMPRESS=1
     ports:
       - "8788:8787"   # Internal — Caddy routes here via hostname
     volumes:
@@ -102,6 +108,7 @@ services:
       - ANTHROPIC_TARGET_API_URL=https://api.deepseek.com/anthropic
       - ENABLE_TOOL_SEARCH=true
       - HEADROOM_MODE=token
+      - HEADROOM_DISABLE_KOMPRESS=1
     ports:
       - "8789:8787"   # Internal — Caddy routes here via hostname
     volumes:
