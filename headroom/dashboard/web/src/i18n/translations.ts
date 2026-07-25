@@ -25,8 +25,30 @@ const zh: Record<string, string> = {
   "s ago": "秒前",
   "m ago": "分前",
 
-  // Overview
+  // Overview page
   Overview: "概览",
+  "Real-time proxy compression metrics · runtime counters reset on restart":
+    "实时代理压缩指标 · 运行时计数器重启后重置",
+
+  // Savings page
+  Savings: "节省",
+  "Token savings breakdown, waste signals, and savings trends":
+    "Token 节省明细、废弃物信号与节省趋势",
+
+  // Performance page
+  Performance: "性能",
+  "Proxy overhead, throughput, pipeline timing, and cache efficiency":
+    "代理开销、吞吐量、管道耗时与缓存效率",
+
+  // Clients page
+  Clients: "客户端",
+  "Detected AI clients and their token usage before and after compression":
+    "检测到的 AI 客户端及其压缩前后的 Token 用量",
+
+  // Activity page
+  "Recent proxy requests with detailed per-request metrics":
+    "最近代理请求及详细的单请求指标",
+
   "Request Health": "请求健康",
   Completed: "已完成",
   Failed: "失败",
@@ -47,7 +69,6 @@ const zh: Record<string, string> = {
   "Of total wire:": "总传输占比:",
 
   // Performance
-  Performance: "性能",
   Overhead: "开销",
   Throughput: "吞吐量",
   "Overhead Range": "开销范围",
@@ -93,7 +114,6 @@ const zh: Record<string, string> = {
   Before: "压缩前",
   After: "压缩后",
   Saved: "已节省",
-  Savings: "节省率",
   "Token flow": "Token 流向",
   Share: "占比",
   "Per-Model Token Savings": "按模型 Token 节省",
@@ -184,7 +204,6 @@ const zh: Record<string, string> = {
 
   // Settings
   Advanced: "高级",
-  Dashboard: "控制台",
   Save: "保存",
   "Apply & Restart": "应用并重启",
   "Clear stored value": "清除已存储值",
@@ -216,8 +235,6 @@ const zh: Record<string, string> = {
 
   // SessionView
   "Loading session stats…": "加载会话统计…",
-  "Current proxy process · runtime counters reset on restart": "当前代理进程 · 运行时计数器在重启时重置",
-  "Real-time proxy compression metrics · runtime counters reset on restart": "实时代理压缩指标 · 计数器重启时重置",
   "calls · tool schemas deferred": "次调用 · 工具模式已延迟",
   "No waste signals detected yet. Data appears after requests are processed.":
     "尚未检测到废弃物信号。处理请求后数据将出现。",

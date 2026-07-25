@@ -1,9 +1,13 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Routes, Route, useSearchParams, useLocation, Navigate, NavLink } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Header } from "@/components/layout/Header";
 import { LiveFeedDrawer } from "@/components/feed/LiveFeedDrawer";
-import { SessionView } from "@/views/SessionView";
+import { OverviewPage } from "@/views/OverviewPage";
+import { SavingsPage } from "@/views/SavingsPage";
+import { PerformancePage } from "@/views/PerformancePage";
+import { ClientsPage } from "@/views/ClientsPage";
+import { ActivityPage } from "@/views/ActivityPage";
 import { LifetimeView } from "@/views/LifetimeView";
 import { HistoryView } from "@/views/HistoryView";
 import { SettingsPage } from "@/views/SettingsPage";
@@ -13,29 +17,25 @@ import { useStats, useHealth } from "@/hooks/useStats";
 import { useTransformations } from "@/hooks/useTransformations";
 import { Sidebar, SidebarGroup, SidebarMenu, SidebarMenuItem } from "@spark-ui/components";
 
+/** Redirect old ?view= query-param URLs to proper routes */
+function LegacyRedirect() {
+  const [searchParams] = useSearchParams();
+  const view = searchParams.get("view");
+  if (view === "lifetime") return <Navigate to="/dashboard/lifetime" replace />;
+  if (view === "history") return <Navigate to="/dashboard/history" replace />;
+  return <OverviewPage />;
+}
+
 export function App() {
   const { lang, toggleTheme } = useAppContext();
   const _t = (k: string) => t(k, lang);
   const queryClient = useQueryClient();
   const [feedOpen, setFeedOpen] = useState(false);
-  const [searchParams] = useSearchParams();
   const location = useLocation();
-  const viewMode = searchParams.get("view") || "session";
 
-  const { data: stats, dataUpdatedAt: statsUpdatedAt } = useStats();
+  const { data: stats } = useStats();
   const { data: health } = useHealth();
   const { data: feedData } = useTransformations(feedOpen);
-
-  // Track savings history for sparkline
-  const savingsHistory = useRef<number[]>([]);
-  useEffect(() => {
-    if (stats?.tokens?.saved !== undefined) {
-      savingsHistory.current.push(stats.tokens.saved);
-      if (savingsHistory.current.length > 30) {
-        savingsHistory.current.shift();
-      }
-    }
-  }, [stats?.tokens?.saved]);
 
   // Keyboard shortcut: R to refresh all data
   useEffect(() => {
@@ -59,9 +59,8 @@ export function App() {
     return String(v).trim();
   }, [health?.version]);
 
-  // Active sidebar state
-  const isSettingsPage = location.pathname === "/dashboard/settings";
-  const currentView = isSettingsPage ? "" : viewMode;
+  // Active sidebar state — match by pathname prefix
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -97,24 +96,56 @@ export function App() {
           <SidebarMenu>
             <SidebarMenuItem
               icon="chart"
-              label={_t("Session")}
-              active={!isSettingsPage && currentView === "session"}
+              label={_t("Overview")}
+              active={isActive("/dashboard")}
               as={NavLink}
               to="/dashboard"
             />
             <SidebarMenuItem
+              icon="download"
+              label={_t("Savings")}
+              active={isActive("/dashboard/savings")}
+              as={NavLink}
+              to="/dashboard/savings"
+            />
+            <SidebarMenuItem
+              icon="zap"
+              label={_t("Performance")}
+              active={isActive("/dashboard/performance")}
+              as={NavLink}
+              to="/dashboard/performance"
+            />
+            <SidebarMenuItem
+              icon="bot"
+              label={_t("Clients")}
+              active={isActive("/dashboard/clients")}
+              as={NavLink}
+              to="/dashboard/clients"
+            />
+            <SidebarMenuItem
+              icon="task-list"
+              label={_t("Activity Log")}
+              active={isActive("/dashboard/activity")}
+              as={NavLink}
+              to="/dashboard/activity"
+            />
+          </SidebarMenu>
+        </SidebarGroup>
+        <SidebarGroup label={_t("History")}>
+          <SidebarMenu>
+            <SidebarMenuItem
               icon="hourglass"
               label={_t("Lifetime")}
-              active={!isSettingsPage && currentView === "lifetime"}
+              active={isActive("/dashboard/lifetime")}
               as={NavLink}
-              to="/dashboard?view=lifetime"
+              to="/dashboard/lifetime"
             />
             <SidebarMenuItem
               icon="document"
               label={_t("History")}
-              active={!isSettingsPage && currentView === "history"}
+              active={isActive("/dashboard/history")}
               as={NavLink}
-              to="/dashboard?view=history"
+              to="/dashboard/history"
             />
           </SidebarMenu>
         </SidebarGroup>
@@ -123,7 +154,7 @@ export function App() {
             <SidebarMenuItem
               icon="gear"
               label={_t("Settings")}
-              active={isSettingsPage}
+              active={isActive("/dashboard/settings")}
               as={NavLink}
               to="/dashboard/settings"
             />
@@ -141,18 +172,13 @@ export function App() {
         />
 
         <Routes>
-          <Route
-            path="/dashboard"
-            element={
-              viewMode === "lifetime" ? (
-                <LifetimeView />
-              ) : viewMode === "history" ? (
-                <HistoryView />
-              ) : (
-                <SessionView stats={stats} savingsHistory={savingsHistory.current} />
-              )
-            }
-          />
+          <Route path="/dashboard" element={<LegacyRedirect />} />
+          <Route path="/dashboard/savings" element={<SavingsPage />} />
+          <Route path="/dashboard/performance" element={<PerformancePage />} />
+          <Route path="/dashboard/clients" element={<ClientsPage />} />
+          <Route path="/dashboard/activity" element={<ActivityPage />} />
+          <Route path="/dashboard/lifetime" element={<LifetimeView />} />
+          <Route path="/dashboard/history" element={<HistoryView />} />
           <Route path="/dashboard/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
@@ -163,40 +189,6 @@ export function App() {
           transformations={feedData?.transformations || []}
         />
 
-        {/* Footer */}
-        <footer
-          className="px-6 py-4 mt-8"
-          style={{ borderTop: "1px solid var(--color-border)" }}
-        >
-          <div
-            className="flex justify-between items-center text-xs max-w-7xl mx-auto"
-            style={{ color: "var(--color-text-muted)" }}
-          >
-            <div>
-              {_t("Press")}{" "}
-              <kbd
-                className="px-1.5 py-0.5 rounded text-xs font-mono"
-                style={{
-                  background: "var(--color-surface-alt)",
-                  color: "var(--color-text-secondary)",
-                }}
-              >
-                R
-              </kbd>{" "}
-              {_t("to refresh")}
-            </div>
-            <div>
-              <a
-                href="https://headroom-docs.vercel.app/docs"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "var(--color-text-muted)" }}
-              >
-                {_t("Documentation")}
-              </a>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );
