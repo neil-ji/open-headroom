@@ -1,7 +1,7 @@
 # Headroom Blue-Green Reverse Proxy
 #
 # Caddy is the front door — it listens on :8787 and reverse-proxies to the
-# active Headroom instance (headroom-blue:8787 or headroom-green:8787).
+# active Headroom instance (headroom-green:8787 or headroom-green:8787).
 #
 # Switching: the deploy script runs `sed` on this file to swap the backend
 # hostname, `docker cp`s the file into the container, then `caddy reload
@@ -11,7 +11,7 @@
 # Default active: blue (replace headroom-blue with headroom-green to switch).
 
 :8787 {
-    reverse_proxy headroom-blue:8787 {
+    reverse_proxy headroom-green:8787 {
         # Use Headroom's existing /readyz for health monitoring.
         health_uri /readyz
         health_interval 10s

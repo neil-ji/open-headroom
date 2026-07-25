@@ -76,9 +76,9 @@ export function App() {
       {/* Sidebar navigation */}
       <Sidebar width={220}>
         {/* Brand area */}
-        <div className="flex items-center gap-2.5 px-3 py-4" style={{ borderBottom: "1px solid var(--color-border)" }}>
+        <div className="flex items-center gap-2.5 px-3 py-2" style={{ borderBottom: "1px solid var(--color-border)" }}>
           <svg
-            className="w-5 h-5 shrink-0"
+            className="w-7 h-7 shrink-0"
             viewBox="0 0 24 24"
             fill="none"
             style={{ color: "var(--color-accent)" }}
@@ -88,7 +88,7 @@ export function App() {
             <rect x="15" y="2" width="4" height="20" rx="1.5" fill="currentColor" opacity="0.4" />
           </svg>
           <span className="text-sm font-bold tracking-tight whitespace-nowrap" style={{ color: "var(--color-text)" }}>
-            HEADROOM
+            OPEN-HEADROOM
           </span>
         </div>
 
